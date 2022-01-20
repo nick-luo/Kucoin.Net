@@ -1,10 +1,19 @@
-﻿namespace Kucoin.Net.Objects.Models.Futures.Socket
+﻿using System;
+using CryptoExchange.Net.Converters;
+using Newtonsoft.Json;
+
+namespace Kucoin.Net.Objects.Models.Futures.Socket
 {
     /// <summary>
     /// Match info
     /// </summary>
     public class KucoinStreamFuturesMatch: KucoinStreamMatchBase
     {
+        /// <summary>
+        /// Gets time of the trade match
+        /// </summary>
+        [JsonProperty("ts"), JsonConverter(typeof(DateTimeConverter))]
+        public DateTime Timestamp { get; set; }
         /// <summary>
         /// Marer user id
         /// </summary>

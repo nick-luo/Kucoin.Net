@@ -27,17 +27,17 @@ namespace Kucoin.Net.Objects.Models.Futures.Socket
         /// <summary>
         /// Order status
         /// </summary>
-        [JsonConverter(typeof(FuturesOrderStatusConverter))]
-        public FuturesOrderStatus Status { get; set; }
+        [JsonConverter(typeof(ExtendedOrderStatusConverter))]
+        public ExtendedOrderStatus Status { get; set; }
         /// <summary>
         /// Match quantity (for match update types)
         /// </summary>
         [JsonProperty("matchSize")]
-        public decimal MatchQuantity { get; set; }
+        public decimal? MatchQuantity { get; set; }
         /// <summary>
         /// Match price (for match update types)
         /// </summary>
-        public decimal MatchPrice { get; set; }
+        public decimal? MatchPrice { get; set; }
         /// <summary>
         /// Order type
         /// </summary>
@@ -51,7 +51,7 @@ namespace Kucoin.Net.Objects.Models.Futures.Socket
         /// <summary>
         /// Price
         /// </summary>
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
         /// <summary>
         /// Quantity
         /// </summary>
@@ -75,12 +75,12 @@ namespace Kucoin.Net.Objects.Models.Futures.Socket
         /// <summary>
         /// Trade id
         /// </summary>
-        public string TradeId { get; set; } = string.Empty;
+        public string? TradeId { get; set; }
         /// <summary>
         /// Client order id
         /// </summary>
         [JsonProperty("clientOid")]
-        public string ClientOrderId { get; set; } = string.Empty;
+        public string? ClientOrderId { get; set; }
         /// <summary>
         /// Order timestamp
         /// </summary>
@@ -90,15 +90,17 @@ namespace Kucoin.Net.Objects.Models.Futures.Socket
         /// Quantity before the update
         /// </summary>
         [JsonProperty("oldSize")]
-        public decimal OldQuantity { get; set; }
+        public decimal? OldQuantity { get; set; }
         /// <summary>
         /// Trade direction
         /// </summary>
-        public LiquidityType Liquidity { get; set; }
+        [JsonConverter(typeof(LiquidityTypeConverter))]
+        public LiquidityType? Liquidity { get; set; }
         /// <summary>
         /// Timestamp
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
+        [JsonProperty("ts")]
         public DateTime Timestamp { get; set; }
     }
 }

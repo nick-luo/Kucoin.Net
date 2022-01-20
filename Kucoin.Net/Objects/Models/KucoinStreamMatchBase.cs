@@ -25,9 +25,9 @@ namespace Kucoin.Net.Objects.Models
         [JsonConverter(typeof(OrderSideConverter))]
         public OrderSide Side { get; set; }
         /// <summary>
-        /// The quantity of the match
+        /// The quantity
         /// </summary>
-        [JsonProperty("Size")]
+        [JsonProperty("size")]
         public decimal Quantity { get; set; }
         /// <summary>
         /// The price of the match
@@ -46,11 +46,6 @@ namespace Kucoin.Net.Objects.Models
         /// </summary>
         [JsonProperty("tradeId")]
         public string Id { get; set; } = string.Empty;
-        /// <summary>
-        /// Gets time of the trade match
-        /// </summary>
-        [JsonProperty("ts"), JsonConverter(typeof(DateTimeConverter))]
-        public DateTime Timestamp { get; set; }
 
     }
 }

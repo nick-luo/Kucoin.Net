@@ -12,7 +12,7 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// <summary>
         /// Order side
         /// </summary>
-        [JsonConverter(typeof(OrderSideConverter))]
+        [JsonConverter(typeof(OrderSideConverter)), JsonProperty("side")]
         public override OrderSide OrderSide { get; set; }
     }
 }

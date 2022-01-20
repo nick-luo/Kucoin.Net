@@ -54,6 +54,11 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         [JsonProperty("size")]
         public decimal Quantity { get; set; }
         /// <summary>
+        /// Quantity before the update
+        /// </summary>
+        [JsonProperty("oldSize")]
+        public decimal? OldQuantity { get; set; }
+        /// <summary>
         /// Quantity filled
         /// </summary>
         [JsonProperty("filledSize")]
@@ -63,6 +68,16 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// </summary>
         [JsonProperty("remainSize")]
         public decimal QuantityRemaining { get; set; }
+        /// <summary>
+        /// Order status
+        /// </summary>
+        [JsonConverter(typeof(ExtendedOrderStatusConverter))]
+        public ExtendedOrderStatus Status { get; set; }
+        /// <summary>
+        /// Order time
+        /// </summary>
+        [JsonProperty("orderTime"), JsonConverter(typeof(DateTimeConverter))]
+        public DateTime? OrderTime { get; set; }
     }
     
     /// <summary>

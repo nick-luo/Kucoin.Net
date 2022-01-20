@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CryptoExchange.Net.Converters;
 using Newtonsoft.Json;
 
@@ -79,7 +80,7 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// <summary>
         /// The timestamp of the data
         /// </summary>
-        [JsonProperty("dateTime"), JsonConverter(typeof(DateTimeConverter))]
+        [JsonProperty("datetime"), JsonConverter(typeof(DateTimeConverter))]
         public DateTime Timestamp { get; set; }
         /// <summary>
         /// The highest price
@@ -91,6 +92,16 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// </summary>
         [JsonProperty("low")]
         public decimal? LowPrice { get; set; }
+        /// <summary>
+        /// The close price
+        /// </summary>
+        [JsonProperty("close")]
+        public decimal? ClosePrice { get; set; }
+        /// <summary>
+        /// The open price
+        /// </summary>
+        [JsonProperty("open")]
+        public decimal? OpenPrice { get; set; }
         /// <summary>
         /// The last price
         /// </summary>
@@ -106,6 +117,10 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         [JsonProperty("changeRate")]
         public decimal? ChangePercentage { get; set; }
         /// <summary>
+        /// Average price
+        /// </summary>
+        public decimal? AveragePrice { get; set; }
+        /// <summary>
         /// Unknown
         /// </summary>
         public int Board { get; set; }
@@ -113,5 +128,29 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// Unknown
         /// </summary>
         public int Mark { get; set; }
+        /// <summary>
+        /// Maker coefficent
+        /// </summary>
+        public decimal? MakerCoefficient { get; set; }
+        /// <summary>
+        /// Taker coefficent
+        /// </summary>
+        public decimal? TakerCoefficient { get; set; }
+        /// <summary>
+        /// Maker fee rate
+        /// </summary>
+        public decimal? MakerFeeRate { get; set; }
+        /// <summary>
+        /// Taker fee rate
+        /// </summary>
+        public decimal? TakerFeeRate { get; set; }
+        /// <summary>
+        /// Margin trade
+        /// </summary>
+        public bool? MarginTrade { get; set; }
+        /// <summary>
+        /// Markets
+        /// </summary>
+        public IEnumerable<string> Markets { get; set; } = new string[0];
     }
 }

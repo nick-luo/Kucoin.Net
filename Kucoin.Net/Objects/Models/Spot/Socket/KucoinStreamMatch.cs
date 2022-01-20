@@ -8,15 +8,16 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
     /// Match info
     /// </summary>
     public class KucoinStreamMatch: KucoinStreamMatchBase
-    {       
-        /// <summary>
-        /// The timestamp of the match
-        /// </summary>
-        [JsonProperty("time"), JsonConverter(typeof(DateTimeConverter))]
-        public new DateTime Timestamp { get; set; }
+    {
         /// <summary>
         /// The type
         /// </summary>
         public string Type { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets time of the trade match
+        /// </summary>
+        [JsonProperty("time"), JsonConverter(typeof(DateTimeConverter))]
+        public DateTime Timestamp { get; set; }
     }
 }

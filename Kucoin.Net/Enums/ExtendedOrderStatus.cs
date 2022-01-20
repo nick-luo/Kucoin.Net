@@ -3,7 +3,7 @@
     /// <summary>
     /// Order status
     /// </summary>
-    public enum FuturesOrderStatus
+    public enum ExtendedOrderStatus
     {
         /// <summary>
         /// Match
