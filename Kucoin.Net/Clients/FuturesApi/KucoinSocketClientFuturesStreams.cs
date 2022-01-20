@@ -229,7 +229,8 @@ namespace Kucoin.Net.Clients.FuturesApi
                 var subject = tokenData.Data["subject"]?.ToString();
                 if (subject == "position.change")
                 {
-                    if (tokenData.Data["changeReason"] == null)
+                    var changeReason = tokenData.Data["data"]?["changeReason"]?.ToString();
+                    if (changeReason == null || changeReason == "markPriceChange")
                     {
                         var data = _baseClient.GetData<KucoinPositionMarkPriceUpdate>(tokenData);
                         KucoinSocketClient.InvokeHandler(tokenData.As(data, symbol), onMarkPriceUpdate);
