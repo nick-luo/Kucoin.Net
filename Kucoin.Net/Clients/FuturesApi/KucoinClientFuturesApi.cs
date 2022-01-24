@@ -66,7 +66,7 @@ namespace Kucoin.Net.Clients.FuturesApi
          => _baseClient.Execute(this, uri, method, ct, parameters, signed);
 
         internal Task<WebCallResult<T>> Execute<T>(Uri uri, HttpMethod method, CancellationToken ct, Dictionary<string, object>? parameters = null, bool signed = false, int weight = 1)
-         => _baseClient.Execute<T>(this, uri, method, ct, parameters, signed);
+         => _baseClient.Execute<T>(this, uri, method, ct, parameters, signed, weight);
 
         internal Uri GetUri(string path, int apiVersion = 1)
         {
@@ -192,14 +192,14 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CryptoExchange.Net.CommonObjects.OrderSide side, CryptoExchange.Net.CommonObjects.OrderType type, decimal quantity, decimal? price, int? leverage, string? accountId)
+        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, int? leverage, string? accountId)
         {
             if (!leverage.HasValue)
                 throw new ArgumentException($"Kucoin required the {nameof(leverage)} parameter for {nameof(IFuturesClient.PlaceOrderAsync)}");
 
             var order = await Trading.PlaceOrderAsync(symbol,
-                side == CryptoExchange.Net.CommonObjects.OrderSide.Sell ? Enums.OrderSide.Sell : Enums.OrderSide.Buy,
-                type == CryptoExchange.Net.CommonObjects.OrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
+                side == CommonOrderSide.Sell ? OrderSide.Sell : OrderSide.Buy,
+                type == CommonOrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
                 leverage.Value,
                 quantity,
                 price
@@ -226,9 +226,9 @@ namespace Kucoin.Net.Clients.FuturesApi
                 QuantityFilled = order.Data.QuantityFilled,
                 Timestamp = order.Data.CreateTime,
                 Symbol = order.Data.Symbol,
-                Side = order.Data.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = order.Data.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : order.Data.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = order.Data.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : order.Data.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = order.Data.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = order.Data.Type == OrderType.Market ? CommonOrderType.Market : order.Data.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = order.Data.IsActive == true ? CommonOrderStatus.Active : order.Data.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             });
         }
 
@@ -254,7 +254,7 @@ namespace Kucoin.Net.Clients.FuturesApi
 
         async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetOpenOrdersAsync(string? symbol)
         {
-            var orders = await Trading.GetOrdersAsync(status: Enums.OrderStatus.Active).ConfigureAwait(false);
+            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Active).ConfigureAwait(false);
             if (!orders)
                 return orders.As<IEnumerable<Order>>(null);
 
@@ -267,15 +267,15 @@ namespace Kucoin.Net.Clients.FuturesApi
                 QuantityFilled = d.QuantityFilled,
                 Timestamp = d.CreateTime,
                 Symbol = d.Symbol,
-                Side = d.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = d.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : d.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = d.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : d.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = d.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = d.Type == OrderType.Market ? CommonOrderType.Market : d.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = d.IsActive == true ? CommonOrderStatus.Active : d.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             }));
         }
 
         async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetClosedOrdersAsync(string? symbol)
         {
-            var orders = await Trading.GetOrdersAsync(status: Enums.OrderStatus.Done).ConfigureAwait(false);
+            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Done).ConfigureAwait(false);
             if (!orders)
                 return orders.As<IEnumerable<Order>>(null);
 
@@ -288,9 +288,9 @@ namespace Kucoin.Net.Clients.FuturesApi
                 QuantityFilled = d.QuantityFilled,
                 Timestamp = d.CreateTime,
                 Symbol = d.Symbol,
-                Side = d.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = d.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : d.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = d.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : d.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = d.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = d.Type == OrderType.Market ? CommonOrderType.Market : d.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = d.IsActive == true ? CommonOrderStatus.Active : d.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             }));
         }
 

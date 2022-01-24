@@ -44,7 +44,7 @@ namespace Kucoin.Net.Objects.Models.Futures
         /// </summary>
         [JsonConverter(typeof(DateTimeConverter))]
         [JsonProperty("openingTimestamp")]
-        public DateTime OpenTime { get; set; }
+        public DateTime? OpenTime { get; set; }
         /// <summary>
         /// Timestamp
         /// </summary>
@@ -175,6 +175,10 @@ namespace Kucoin.Net.Objects.Models.Futures
         /// </summary>
         [JsonProperty("settleCurrency")]
         public string SettleAsset { get; set; } = string.Empty;
+        /// <summary>
+        /// Risk limit level
+        /// </summary>
+        public int? RiskLimitLevel { get; set; }
     }
 
     /// <summary>

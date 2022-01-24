@@ -114,6 +114,7 @@ namespace Kucoin.Net.UnitTests
         public async Task ValidateFuturesPositionUpdateStreamJson()
         {
             await TestFileToObject<KucoinPositionUpdate>(@"JsonResponses\Futures\Socket\PositionUpdate1.txt");
+            await TestFileToObject<KucoinPositionUpdate>(@"JsonResponses\Futures\Socket\PositionUpdate5.txt");
             await TestFileToObject<KucoinPositionMarkPriceUpdate>(@"JsonResponses\Futures\Socket\PositionUpdate2.txt");
             await TestFileToObject<KucoinPositionFundingSettlementUpdate>(@"JsonResponses\Futures\Socket\PositionUpdate3.txt");
             await TestFileToObject<KucoinPositionRiskAdjustResultUpdate>(@"JsonResponses\Futures\Socket\PositionUpdate4.txt");

@@ -257,6 +257,8 @@ namespace Kucoin.Net.UnitTests
         {
             if (propertyValue == default && propValue.Type != JTokenType.Null && !string.IsNullOrEmpty(propValue.ToString()))
             {
+                if (propValue.ToString() == "0" && info.PropertyType == typeof(DateTime?))
+                    return;
                 // Property value not correct
                 throw new Exception($"{method}: Property `{propertyName}` has no value while input json `{propName}` has value {propValue}");
             }

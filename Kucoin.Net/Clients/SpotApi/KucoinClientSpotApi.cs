@@ -181,11 +181,11 @@ namespace Kucoin.Net.Clients.SpotApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> ISpotClient.PlaceOrderAsync(string symbol, CryptoExchange.Net.CommonObjects.OrderSide side, CryptoExchange.Net.CommonObjects.OrderType type, decimal quantity, decimal? price = null, string? accountId = null)
+        async Task<WebCallResult<OrderId>> ISpotClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price = null, string? accountId = null)
         {
             var order = await Trading.PlaceOrderAsync(symbol,
-                side == CryptoExchange.Net.CommonObjects.OrderSide.Sell ? Enums.OrderSide.Sell : Enums.OrderSide.Buy,
-                type == CryptoExchange.Net.CommonObjects.OrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
+                side == CommonOrderSide.Sell ? OrderSide.Sell : OrderSide.Buy,
+                type == CommonOrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
                 price, quantity).ConfigureAwait(false);
             if (!order)
                 return order.As<OrderId>(null);
@@ -212,9 +212,9 @@ namespace Kucoin.Net.Clients.SpotApi
                 QuantityFilled = order.Data.QuantityFilled,
                 Timestamp = order.Data.CreateTime,
                 Symbol = order.Data.Symbol,
-                Side = order.Data.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = order.Data.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : order.Data.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = order.Data.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : order.Data.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = order.Data.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = order.Data.Type == OrderType.Market ? CommonOrderType.Market : order.Data.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = order.Data.IsActive == true ? CommonOrderStatus.Active : order.Data.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             });
         }
 
@@ -253,9 +253,9 @@ namespace Kucoin.Net.Clients.SpotApi
                 QuantityFilled = d.QuantityFilled,
                 Timestamp = d.CreateTime,
                 Symbol = d.Symbol,
-                Side = d.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = d.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : d.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = d.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : d.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = d.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = d.Type == OrderType.Market ? CommonOrderType.Market : d.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = d.IsActive == true ? CommonOrderStatus.Active : d.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             }));
         }
 
@@ -274,9 +274,9 @@ namespace Kucoin.Net.Clients.SpotApi
                 QuantityFilled = d.QuantityFilled,
                 Timestamp = d.CreateTime,
                 Symbol = d.Symbol,
-                Side = d.Side == Enums.OrderSide.Buy ? CryptoExchange.Net.CommonObjects.OrderSide.Buy : CryptoExchange.Net.CommonObjects.OrderSide.Sell,
-                Type = d.Type == Enums.OrderType.Market ? CryptoExchange.Net.CommonObjects.OrderType.Market : d.Type == Enums.OrderType.Limit ? CryptoExchange.Net.CommonObjects.OrderType.Limit : CryptoExchange.Net.CommonObjects.OrderType.Other,
-                Status = d.IsActive == true ? CryptoExchange.Net.CommonObjects.OrderStatus.Active : d.CancelExist ? CryptoExchange.Net.CommonObjects.OrderStatus.Canceled : CryptoExchange.Net.CommonObjects.OrderStatus.Filled
+                Side = d.Side == OrderSide.Buy ? CommonOrderSide.Buy : CommonOrderSide.Sell,
+                Type = d.Type == OrderType.Market ? CommonOrderType.Market : d.Type == OrderType.Limit ? CommonOrderType.Limit : CommonOrderType.Other,
+                Status = d.IsActive == true ? CommonOrderStatus.Active : d.CancelExist ? CommonOrderStatus.Canceled : CommonOrderStatus.Filled
             }));
         }
 
