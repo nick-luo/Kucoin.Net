@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
@@ -37,7 +38,7 @@ namespace Kucoin.Net.SymbolOrderBooks
         }
 
         /// <inheritdoc />
-        protected override async Task<CallResult<UpdateSubscription>> DoStartAsync()
+        protected override async Task<CallResult<UpdateSubscription>> DoStartAsync(CancellationToken ct)
         {
             if (KucoinClientOptions.Default.ApiCredentials == null && KucoinClientOptions.Default.SpotApiOptions.ApiCredentials == null)
                 return new CallResult<UpdateSubscription>(new ArgumentError("No API credentials provided for the default KucoinClient. Make sure API credentials are set using KucoinClient.SetDefaultOptions."));
@@ -48,6 +49,12 @@ namespace Kucoin.Net.SymbolOrderBooks
                 subResult = await socketClient.SpotStreams.SubscribeToAggregatedOrderBookUpdatesAsync(Symbol, HandleFullUpdate).ConfigureAwait(false);
                 if (!subResult)
                     return subResult;
+
+                if (ct.IsCancellationRequested)
+                {
+                    await subResult.Data.CloseAsync().ConfigureAwait(false);
+                    return subResult.AsError<UpdateSubscription>(new CancellationRequestedError());
+                }
 
                 Status = OrderBookStatus.Syncing;
                 var bookResult = await restClient.SpotApi.ExchangeData.GetAggregatedFullOrderBookAsync(Symbol).ConfigureAwait(false);
@@ -66,8 +73,20 @@ namespace Kucoin.Net.SymbolOrderBooks
                 if (!subResult)
                     return subResult;
 
+                if (ct.IsCancellationRequested)
+                {
+                    await subResult.Data.CloseAsync().ConfigureAwait(false);
+                    return subResult.AsError<UpdateSubscription>(new CancellationRequestedError());
+                }
+
                 Status = OrderBookStatus.Syncing;
-                await WaitForSetOrderBookAsync(10000).ConfigureAwait(false);
+                var setResult = await WaitForSetOrderBookAsync(10000, ct).ConfigureAwait(false);
+                if(!setResult)
+                {
+
+                    await subResult.Data.CloseAsync().ConfigureAwait(false);
+                    return setResult.As(subResult.Data);
+                }    
             }
 
             if (!subResult)
@@ -77,10 +96,10 @@ namespace Kucoin.Net.SymbolOrderBooks
         }
 
         /// <inheritdoc />
-        protected override async Task<CallResult<bool>> DoResyncAsync()
+        protected override async Task<CallResult<bool>> DoResyncAsync(CancellationToken ct)
         {
             if (Levels != null)
-                return await WaitForSetOrderBookAsync(10000).ConfigureAwait(false);
+                return await WaitForSetOrderBookAsync(10000, ct).ConfigureAwait(false);
 
             var bookResult = await restClient.SpotApi.ExchangeData.GetAggregatedFullOrderBookAsync(Symbol).ConfigureAwait(false);
             if (!bookResult)

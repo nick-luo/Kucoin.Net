@@ -93,9 +93,9 @@ namespace Kucoin.Net.Clients.FuturesApi
         /// <returns></returns>
         public string GetSymbolName(string baseAsset, string quoteAsset) => (baseAsset + "-" + quoteAsset).ToUpperInvariant();
         
-        async Task<WebCallResult<IEnumerable<Symbol>>> IBaseRestClient.GetSymbolsAsync()
+        async Task<WebCallResult<IEnumerable<Symbol>>> IBaseRestClient.GetSymbolsAsync(CancellationToken ct)
         {
-            var symbols = await ExchangeData.GetOpenContractsAsync().ConfigureAwait(false);
+            var symbols = await ExchangeData.GetOpenContractsAsync(ct: ct).ConfigureAwait(false);
             if (!symbols)
                 return symbols.As<IEnumerable<Symbol>>(null);
 
@@ -109,9 +109,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<Ticker>> IBaseRestClient.GetTickerAsync(string symbol)
+        async Task<WebCallResult<Ticker>> IBaseRestClient.GetTickerAsync(string symbol, CancellationToken ct)
         {
-            var ticker = await ExchangeData.GetContractAsync(symbol).ConfigureAwait(false);
+            var ticker = await ExchangeData.GetContractAsync(symbol, ct: ct).ConfigureAwait(false);
             if (!ticker)
                 return ticker.As<Ticker>(null);
 
@@ -125,9 +125,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             });
         }
 
-        async Task<WebCallResult<IEnumerable<Ticker>>> IBaseRestClient.GetTickersAsync()
+        async Task<WebCallResult<IEnumerable<Ticker>>> IBaseRestClient.GetTickersAsync(CancellationToken ct)
         {
-            var symbols = await ExchangeData.GetOpenContractsAsync().ConfigureAwait(false);
+            var symbols = await ExchangeData.GetOpenContractsAsync(ct: ct).ConfigureAwait(false);
             if (!symbols)
                 return symbols.As<IEnumerable<Ticker>>(null);
 
@@ -141,12 +141,12 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<IEnumerable<Kline>>> IBaseRestClient.GetKlinesAsync(string symbol, TimeSpan timespan, DateTime? startTime, DateTime? endTime, int? limit)
+        async Task<WebCallResult<IEnumerable<Kline>>> IBaseRestClient.GetKlinesAsync(string symbol, TimeSpan timespan, DateTime? startTime, DateTime? endTime, int? limit, CancellationToken ct)
         {
             if (limit != null)
                 throw new ArgumentException($"Kucoin doesn't support the {nameof(limit)} parameter for the method {nameof(IBaseRestClient.GetKlinesAsync)}", nameof(limit));
 
-            var symbols = await ExchangeData.GetKlinesAsync(symbol, GetKlineIntervalFromTimespan(timespan), startTime, endTime).ConfigureAwait(false);
+            var symbols = await ExchangeData.GetKlinesAsync(symbol, GetKlineIntervalFromTimespan(timespan), startTime, endTime, ct: ct).ConfigureAwait(false);
             if (!symbols)
                 return symbols.As<IEnumerable<Kline>>(null);
 
@@ -162,9 +162,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<OrderBook>> IBaseRestClient.GetOrderBookAsync(string symbol)
+        async Task<WebCallResult<OrderBook>> IBaseRestClient.GetOrderBookAsync(string symbol, CancellationToken ct)
         {
-            var book = await ExchangeData.GetAggregatedPartialOrderBookAsync(symbol, 100).ConfigureAwait(false);
+            var book = await ExchangeData.GetAggregatedPartialOrderBookAsync(symbol, 100, ct: ct).ConfigureAwait(false);
             if (!book)
                 return book.As<OrderBook>(null);
 
@@ -176,9 +176,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             });
         }
 
-        async Task<WebCallResult<IEnumerable<Trade>>> IBaseRestClient.GetRecentTradesAsync(string symbol)
+        async Task<WebCallResult<IEnumerable<Trade>>> IBaseRestClient.GetRecentTradesAsync(string symbol, CancellationToken ct)
         {
-            var trades = await ExchangeData.GetTradeHistoryAsync(symbol).ConfigureAwait(false);
+            var trades = await ExchangeData.GetTradeHistoryAsync(symbol, ct: ct).ConfigureAwait(false);
             if (!trades)
                 return trades.As<IEnumerable<Trade>>(null);
 
@@ -192,7 +192,7 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, int? leverage, string? accountId)
+        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, int? leverage, string? accountId, CancellationToken ct)
         {
             if (!leverage.HasValue)
                 throw new ArgumentException($"Kucoin required the {nameof(leverage)} parameter for {nameof(IFuturesClient.PlaceOrderAsync)}");
@@ -202,7 +202,7 @@ namespace Kucoin.Net.Clients.FuturesApi
                 type == CommonOrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
                 leverage.Value,
                 quantity,
-                price
+                price, ct: ct
                 ).ConfigureAwait(false);
             return order.As(new OrderId
             {
@@ -211,9 +211,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             });
         }
 
-        async Task<WebCallResult<Order>> IBaseRestClient.GetOrderAsync(string orderId, string? symbol)
+        async Task<WebCallResult<Order>> IBaseRestClient.GetOrderAsync(string orderId, string? symbol, CancellationToken ct)
         {
-            var order = await Trading.GetOrderAsync(orderId).ConfigureAwait(false);
+            var order = await Trading.GetOrderAsync(orderId, ct: ct).ConfigureAwait(false);
             if (!order)
                 return order.As<Order>(null);
 
@@ -232,9 +232,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             });
         }
 
-        async Task<WebCallResult<IEnumerable<UserTrade>>> IBaseRestClient.GetOrderTradesAsync(string orderId, string? symbol)
+        async Task<WebCallResult<IEnumerable<UserTrade>>> IBaseRestClient.GetOrderTradesAsync(string orderId, string? symbol, CancellationToken ct)
         {
-            var trades = await Trading.GetUserTradesAsync(orderId: orderId).ConfigureAwait(false);
+            var trades = await Trading.GetUserTradesAsync(orderId: orderId, ct: ct).ConfigureAwait(false);
             if (!trades)
                 return trades.As<IEnumerable<UserTrade>>(null);
 
@@ -252,9 +252,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetOpenOrdersAsync(string? symbol)
+        async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetOpenOrdersAsync(string? symbol, CancellationToken ct)
         {
-            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Active).ConfigureAwait(false);
+            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Active, ct: ct).ConfigureAwait(false);
             if (!orders)
                 return orders.As<IEnumerable<Order>>(null);
 
@@ -273,9 +273,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetClosedOrdersAsync(string? symbol)
+        async Task<WebCallResult<IEnumerable<Order>>> IBaseRestClient.GetClosedOrdersAsync(string? symbol, CancellationToken ct)
         {
-            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Done).ConfigureAwait(false);
+            var orders = await Trading.GetOrdersAsync(status: OrderStatus.Done, ct: ct).ConfigureAwait(false);
             if (!orders)
                 return orders.As<IEnumerable<Order>>(null);
 
@@ -294,9 +294,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> IBaseRestClient.CancelOrderAsync(string orderId, string? symbol)
+        async Task<WebCallResult<OrderId>> IBaseRestClient.CancelOrderAsync(string orderId, string? symbol, CancellationToken ct)
         {
-            var result = await Trading.CancelOrderAsync(orderId).ConfigureAwait(false);
+            var result = await Trading.CancelOrderAsync(orderId, ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.As<OrderId>(null);
 
@@ -310,9 +310,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             });
         }
 
-        async Task<WebCallResult<IEnumerable<Balance>>> IBaseRestClient.GetBalancesAsync(string? accountId)
+        async Task<WebCallResult<IEnumerable<Balance>>> IBaseRestClient.GetBalancesAsync(string? accountId, CancellationToken ct)
         {
-            var result = await Account.GetAccountOverviewAsync().ConfigureAwait(false);
+            var result = await Account.GetAccountOverviewAsync(ct: ct).ConfigureAwait(false);
             if (!result)
                 return result.As<IEnumerable<Balance>>(null);
 
@@ -325,9 +325,9 @@ namespace Kucoin.Net.Clients.FuturesApi
             } });
         }
 
-        async Task<WebCallResult<IEnumerable<Position>>> IFuturesClient.GetPositionsAsync()
+        async Task<WebCallResult<IEnumerable<Position>>> IFuturesClient.GetPositionsAsync(CancellationToken ct)
         {
-            var positions = await Account.GetPositionsAsync().ConfigureAwait(false);
+            var positions = await Account.GetPositionsAsync(ct: ct).ConfigureAwait(false);
             if (!positions)
                 return positions.As<IEnumerable<Position>>(null);
 
