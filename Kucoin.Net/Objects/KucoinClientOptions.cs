@@ -16,7 +16,7 @@ namespace Kucoin.Net.Objects
         /// </summary>
         public static KucoinClientOptions Default { get; set; } = new KucoinClientOptions();
 
-        private readonly KucoinRestApiClientOptions _spotApiOptions = new KucoinRestApiClientOptions("https://api.kucoin.com/api/")
+        private readonly KucoinRestApiClientOptions _spotApiOptions = new KucoinRestApiClientOptions(KucoinApiAddresses.Default.SpotAddress)
         {
             RateLimiters = new List<IRateLimiter>
             {
@@ -43,7 +43,7 @@ namespace Kucoin.Net.Objects
             set => _spotApiOptions.Copy(_spotApiOptions, value);
         }
 
-        private readonly KucoinRestApiClientOptions _futuresApiOptions = new KucoinRestApiClientOptions("https://api-futures.kucoin.com/api/");
+        private readonly KucoinRestApiClientOptions _futuresApiOptions = new KucoinRestApiClientOptions(KucoinApiAddresses.Default.FuturesAddress);
         /// <summary>
         /// Futures API options
         /// </summary>

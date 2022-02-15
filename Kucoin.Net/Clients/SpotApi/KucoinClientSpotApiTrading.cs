@@ -377,17 +377,7 @@ namespace Kucoin.Net.Clients.SpotApi
             return await _baseClient.Execute<IEnumerable<KucoinStopOrder>>(_baseClient.GetUri("stop-order/queryOrderByClientOid"), HttpMethod.Get, ct, parameters, signed: true).ConfigureAwait(false);
         }
 
-
-        /// <summary>
-        /// Places a Borrow order (https://docs.kucoin.com/#post-borrow-order)
-        /// </summary>
-        /// <param name="asset">Asset to Borrow e.g USDT etc</param>
-        /// <param name="type">The type of the order (FOK, IOC)</param>
-        /// <param name="quantity">Total size</param>
-        /// <param name="maxRate">The max interest rate. All interest rates are acceptable if this field is left empty</param>
-        /// <param name="term">term (Unit: Day). All terms are acceptable if this field is left empty. Please note to separate the terms via comma. For example, 7,14,28</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>The id of the new order</returns>
+        /// <inheritdoc />
         public async Task<WebCallResult<KucoinNewBorrowOrder>> PlaceBorrowOrderAsync(
             string asset,
             BorrowOrderType type,
@@ -408,12 +398,7 @@ namespace Kucoin.Net.Clients.SpotApi
             return await _baseClient.Execute<KucoinNewBorrowOrder>(_baseClient.GetUri("margin/borrow"), HttpMethod.Post, ct, parameters, true).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get info on a specific borrow order (https://docs.kucoin.com/#get-borrow-order)
-        /// </summary>
-        /// <param name="orderId">The order id of the borrow order</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Borrow Order info</returns>
+        /// <inheritdoc />
         public async Task<WebCallResult<KucoinBorrowOrder>> GetBorrowOrderAsync(string orderId, CancellationToken ct = default)
         {
             orderId.ValidateNotNull(nameof(orderId));
@@ -424,14 +409,7 @@ namespace Kucoin.Net.Clients.SpotApi
             return await _baseClient.Execute<KucoinBorrowOrder>(_baseClient.GetUri($"margin/borrow"), HttpMethod.Get, ct, parameters, true).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Repay a Single Order (https://docs.kucoin.com/#repay-a-single-order)
-        /// </summary>
-        /// <param name="asset">Asset to Pay e.g USDT etc</param>
-        /// <param name="tradeId">Trade ID of borrow order</param>
-        /// <param name="quantity">Repayment size</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<WebCallResult> RepaySingleBorrowOrderAsync(
             string asset,
             string tradeId,
