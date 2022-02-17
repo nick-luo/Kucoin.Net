@@ -169,7 +169,7 @@ namespace Kucoin.Net.Clients.SpotApi
         }
 
         /// <inheritdoc />
-        public async Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = null, Enums.OrderSide? side = null, Enums.OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, Enums.OrderStatus? status = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default)
+        public async Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = null, Enums.OrderSide? side = null, Enums.OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, Enums.OrderStatus? status = null, TradeType? tradeType = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default)
         {
             symbol?.ValidateKucoinSymbol();
             pageSize?.ValidateIntBetween(nameof(pageSize), 10, 500);
@@ -181,6 +181,7 @@ namespace Kucoin.Net.Clients.SpotApi
             parameters.AddOptionalParameter("startAt", DateTimeConverter.ConvertToMilliseconds(startTime));
             parameters.AddOptionalParameter("endAt", DateTimeConverter.ConvertToMilliseconds(endTime));
             parameters.AddOptionalParameter("status", status.HasValue ? JsonConvert.SerializeObject(status, new OrderStatusConverter(false)) : null);
+            parameters.AddOptionalParameter("tradeType", tradeType.HasValue ? JsonConvert.SerializeObject(tradeType, new TradeTypeConverter(false)) : null);
             parameters.AddOptionalParameter("currentPage", currentPage);
             parameters.AddOptionalParameter("pageSize", pageSize);
 
@@ -225,7 +226,7 @@ namespace Kucoin.Net.Clients.SpotApi
         }
 
         /// <inheritdoc />
-        public async Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = null, Enums.OrderSide? side = null, Enums.OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, string? orderId = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default)
+        public async Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = null, Enums.OrderSide? side = null, Enums.OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, string? orderId = null, TradeType? tradeType = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default)
         {
             symbol?.ValidateKucoinSymbol();
             pageSize?.ValidateIntBetween(nameof(pageSize), 10, 500);
@@ -237,6 +238,7 @@ namespace Kucoin.Net.Clients.SpotApi
             parameters.AddOptionalParameter("symbol", symbol);
             parameters.AddOptionalParameter("side", side.HasValue ? JsonConvert.SerializeObject(side, new OrderSideConverter(false)) : null);
             parameters.AddOptionalParameter("type", type.HasValue ? JsonConvert.SerializeObject(type, new OrderTypeConverter(false)) : null);
+            parameters.AddOptionalParameter("tradeType", tradeType.HasValue ? JsonConvert.SerializeObject(tradeType, new TradeTypeConverter(false)) : null);
             parameters.AddOptionalParameter("startAt", DateTimeConverter.ConvertToMilliseconds(startTime));
             parameters.AddOptionalParameter("endAt", DateTimeConverter.ConvertToMilliseconds(endTime));
             parameters.AddOptionalParameter("orderId", orderId);

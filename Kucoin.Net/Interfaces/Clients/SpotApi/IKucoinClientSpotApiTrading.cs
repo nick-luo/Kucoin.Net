@@ -133,11 +133,12 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <param name="startTime">Filter list by start time</param>
         /// <param name="endTime">Filter list by end time</param>
         /// <param name="status">Filter list by order status. Defaults to done</param>
+        /// <param name="tradeType">The type of orders to retrieve</param>
         /// <param name="currentPage">The page to retrieve</param>
         /// <param name="pageSize">The amount of results per page</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>List of orders</returns>
-        Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = null, OrderSide? side = null, OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, OrderStatus? status = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
+        Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = null, OrderSide? side = null, OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, OrderStatus? status = null, TradeType? tradeType = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of max 1000 orders in the last 24 hours
@@ -189,11 +190,12 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <param name="startTime">Filter list by start time</param>
         /// <param name="endTime">Filter list by end time</param>
         /// <param name="orderId">Filter list by order id</param>
+        /// <param name="tradeType">The type of orders to retrieve</param>
         /// <param name="currentPage">The page to retrieve</param>
         /// <param name="pageSize">The amount of results per page</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>List of fills</returns>
-        Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = null, OrderSide? side = null, OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, string? orderId = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
+        Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = null, OrderSide? side = null, OrderType? type = null, DateTime? startTime = null, DateTime? endTime = null, string? orderId = null, TradeType? tradeType = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of max 1000 fills in the last 24 hours
