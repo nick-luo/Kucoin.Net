@@ -18,53 +18,21 @@ I develop and maintain this package on my own for free in my spare time. Donatio
 A Discord server is available [here](https://discord.gg/MSpeEtSY8t). Feel free to join for discussion and/or questions around the CryptoExchange.Net and implementation libraries.
 
 ## Release notes
-* Version 4.0.0-beta7 - 05 Feb 2022
-    * Updated CryptoExchange.Net, adding Cancellation token support for Common interface and SymbolOrderBook
+* Version 4.0.0 - 18 Feb 2022
+	* Added Github.io page for documentation: https://jkorf.github.io/Kucoin.Net/
+	* Added unit tests for parsing the returned JSON for each endpoint and subscription
+	* Added AddKucoin extension method on IServiceCollection for easy dependency injection
+	* Added URL reference to API endpoint documentation for each endpoint
+	* Added default rate limiter
 
-* Version 4.0.0-beta6 - 31 Jan 2022
-    * Updated CryptoExchange.Net
+	* Refactored client structure to be consistent across exchange implementations
+	* Renamed various properties to be consistent across exchange implementations
 
-* Version 4.0.0-beta5 - 24 Jan 2022
-    * Fixed position update deserialization error
-    * Updated CryptoExchange.Net
+	* Cleaned up project structure
+	* Fixed various models
 
-* Version 4.0.0-beta4 - 20 Jan 2022
-    * Fixed user trade and position deserialization
-    * Added socket json unit tests
-
-* Version 4.0.0-beta3 - 19 Jan 2022
-    * Fixed Futures order deserialization in .Net Framework
-    * Added default clientOrderId for new futures orders if not provided
-
-* Version 4.0.0-beta2 - 19 Jan 2022
-    * Fixed futures Balance and SpotOrder update streams not receiving updates
-
-* Version 4.0.0-beta1 - 15 Jan 2022
-    * Updated CryptoExchange.Net
-
-* Version 4.0.0-alpha7 - 13 Jan 2022
-    * Fixed parameters for Delete requests
-    * Added StopOrderEvent enum for stop order updates
-    * Fixed market stop order deserialization issue
-
-* Version 4.0.0-alpha6 - 07 Jan 2022
-    * Updated CrytpoExchange.Net
-    * Added optional parameter for socket client lifetime in AddKucoin
-
-* Version 4.0.0-alpha5 - 03 Jan 2022
-    * Updated CryptoExchange.Net
-
-* Version 4.0.0-alpha4 - 01 Jan 2022
-    * New comon implementation, added AddKucoin extension method
-
-* Version 4.0.0-alpha3 - 27 Dec 2021
-    * Updated CryptoExchange.Net
-
-* Version 4.0.0-alpha2 - 21 Dec 2021
-    * Update to new CryptoExchange.Net version
-
-* Version 4.0.0-alpha1 - 07 Dec 2021
-    * Initial version new CryptoExchange.Net. More documentation coming soon
+	* Updated CryptoExchange.Net, see https://github.com/JKorf/CryptoExchange.Net#release-notes
+	* See https://jkorf.github.io/Kucoin.Net/MigrationGuide.html for additional notes for updating from V3 to V4
 
 * Version 3.1.6 - 04 Nov 2021
     * Fixed futures order deserialization

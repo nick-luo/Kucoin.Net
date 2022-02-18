@@ -281,7 +281,7 @@ var result = await client.SpotApi.Trading.GetOrdersAsync();
 ```  
 
 ```csharp  
-Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = default, OrderSide? side = default, OrderType? type = default, DateTime? startTime = default, DateTime? endTime = default, OrderStatus? status = default, int? currentPage = default, int? pageSize = default, CancellationToken ct = default);  
+Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol = default, OrderSide? side = default, OrderType? type = default, DateTime? startTime = default, DateTime? endTime = default, OrderStatus? status = default, TradeType? tradeType = default, int? currentPage = default, int? pageSize = default, CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
@@ -292,6 +292,7 @@ Task<WebCallResult<KucoinPaginated<KucoinOrder>>> GetOrdersAsync(string? symbol 
 |_[Optional]_ startTime|Filter list by start time|
 |_[Optional]_ endTime|Filter list by end time|
 |_[Optional]_ status|Filter list by order status. Defaults to done|
+|_[Optional]_ tradeType|The type of orders to retrieve|
 |_[Optional]_ currentPage|The page to retrieve|
 |_[Optional]_ pageSize|The amount of results per page|
 |_[Optional]_ ct|Cancellation token|
@@ -445,7 +446,7 @@ var result = await client.SpotApi.Trading.GetUserTradesAsync();
 ```  
 
 ```csharp  
-Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = default, OrderSide? side = default, OrderType? type = default, DateTime? startTime = default, DateTime? endTime = default, string? orderId = default, int? currentPage = default, int? pageSize = default, CancellationToken ct = default);  
+Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string? symbol = default, OrderSide? side = default, OrderType? type = default, DateTime? startTime = default, DateTime? endTime = default, string? orderId = default, TradeType? tradeType = default, int? currentPage = default, int? pageSize = default, CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
@@ -456,6 +457,7 @@ Task<WebCallResult<KucoinPaginated<KucoinUserTrade>>> GetUserTradesAsync(string?
 |_[Optional]_ startTime|Filter list by start time|
 |_[Optional]_ endTime|Filter list by end time|
 |_[Optional]_ orderId|Filter list by order id|
+|_[Optional]_ tradeType|The type of orders to retrieve|
 |_[Optional]_ currentPage|The page to retrieve|
 |_[Optional]_ pageSize|The amount of results per page|
 |_[Optional]_ ct|Cancellation token|
