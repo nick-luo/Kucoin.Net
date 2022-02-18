@@ -2,6 +2,7 @@
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
+using CryptoExchange.Net.Interfaces.CommonClients;
 using CryptoExchange.Net.Logging;
 using CryptoExchange.Net.Objects;
 using Kucoin.Net.Enums;
@@ -179,12 +180,15 @@ namespace Kucoin.Net.Clients.SpotApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> ISpotClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, string? accountId, CancellationToken ct)
+        async Task<WebCallResult<OrderId>> ISpotClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, string? accountId, string? clientOrderId, CancellationToken ct)
         {
             var order = await Trading.PlaceOrderAsync(symbol,
                 side == CommonOrderSide.Sell ? OrderSide.Sell : OrderSide.Buy,
                 type == CommonOrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
-                price, quantity, ct: ct).ConfigureAwait(false);
+                price, 
+                quantity,
+                clientOrderId: clientOrderId,
+                ct: ct).ConfigureAwait(false);
             if (!order)
                 return order.As<OrderId>(null);
 

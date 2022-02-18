@@ -2,6 +2,7 @@
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.CommonObjects;
 using CryptoExchange.Net.Interfaces;
+using CryptoExchange.Net.Interfaces.CommonClients;
 using CryptoExchange.Net.Logging;
 using CryptoExchange.Net.Objects;
 using Kucoin.Net.Enums;
@@ -192,7 +193,7 @@ namespace Kucoin.Net.Clients.FuturesApi
             }));
         }
 
-        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, int? leverage, string? accountId, CancellationToken ct)
+        async Task<WebCallResult<OrderId>> IFuturesClient.PlaceOrderAsync(string symbol, CommonOrderSide side, CommonOrderType type, decimal quantity, decimal? price, int? leverage, string? accountId, string? clientOrderId, CancellationToken ct)
         {
             if (!leverage.HasValue)
                 throw new ArgumentException($"Kucoin required the {nameof(leverage)} parameter for {nameof(IFuturesClient.PlaceOrderAsync)}");
@@ -202,7 +203,9 @@ namespace Kucoin.Net.Clients.FuturesApi
                 type == CommonOrderType.Limit ? NewOrderType.Limit : NewOrderType.Market,
                 leverage.Value,
                 quantity,
-                price, ct: ct
+                price, 
+                clientOrderId: clientOrderId,
+                ct: ct
                 ).ConfigureAwait(false);
             return order.As(new OrderId
             {
