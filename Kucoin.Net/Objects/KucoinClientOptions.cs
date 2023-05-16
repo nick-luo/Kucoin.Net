@@ -9,7 +9,7 @@ namespace Kucoin.Net.Objects
     /// <summary>
     /// Options for the KucoinClient
     /// </summary>
-    public class KucoinClientOptions: BaseRestClientOptions
+    public class KucoinClientOptions: ClientOptions
     {
         /// <summary>
         /// Default options for the spot client
@@ -68,8 +68,8 @@ namespace Kucoin.Net.Objects
         {
             if (baseOn == null)
                 return;
-
             ApiCredentials = (KucoinApiCredentials?)baseOn.ApiCredentials?.Copy();
+
             _spotApiOptions = new KucoinRestApiClientOptions(baseOn.SpotApiOptions, null);
             _futuresApiOptions = new KucoinRestApiClientOptions(baseOn.FuturesApiOptions, null);
         }
@@ -78,14 +78,12 @@ namespace Kucoin.Net.Objects
     /// <summary>
     /// Options for the KucoinSocketClient
     /// </summary>
-    public class KucoinSocketClientOptions: BaseSocketClientOptions
+    public class KucoinSocketClientOptions: ClientOptions
     {
         /// <summary>
         /// Default options for the spot client
         /// </summary>
-        public static KucoinSocketClientOptions Default { get; set; } = new KucoinSocketClientOptions() {
-            SocketSubscriptionsCombineTarget = 10
-        };
+        public static KucoinSocketClientOptions Default { get; set; } = new KucoinSocketClientOptions();
 
         /// <inheritdoc />
         public new KucoinApiCredentials? ApiCredentials
@@ -94,7 +92,12 @@ namespace Kucoin.Net.Objects
             set => base.ApiCredentials = value;
         }
 
-        private KucoinSocketApiClientOptions _spotStreamsOptions = new KucoinSocketApiClientOptions();
+        private KucoinSocketApiClientOptions _spotStreamsOptions = new KucoinSocketApiClientOptions()
+        {
+            SocketSubscriptionsCombineTarget = 10,
+            MaxSocketConnections = 50
+        };
+
         /// <summary>
         /// Spot stream options
         /// </summary>
@@ -104,7 +107,12 @@ namespace Kucoin.Net.Objects
             set => _spotStreamsOptions = new KucoinSocketApiClientOptions(_spotStreamsOptions, value);
         }
 
-        private KucoinSocketApiClientOptions _futuresStreamsOptions = new KucoinSocketApiClientOptions();
+        private KucoinSocketApiClientOptions _futuresStreamsOptions = new KucoinSocketApiClientOptions()
+        {
+            SocketSubscriptionsCombineTarget = 10,
+            MaxSocketConnections = 50
+        };
+
         /// <summary>
         /// Futures stream options
         /// </summary>
@@ -177,7 +185,7 @@ namespace Kucoin.Net.Objects
     /// <summary>
     /// Socket client options
     /// </summary>
-    public class KucoinSocketApiClientOptions : ApiClientOptions
+    public class KucoinSocketApiClientOptions : SocketApiClientOptions
     {
         /// <inheritdoc />
         public new KucoinApiCredentials? ApiCredentials
@@ -213,6 +221,11 @@ namespace Kucoin.Net.Objects
         /// The top amount of results to keep in sync. If for example limit=10 is used, the order book will contain the 10 best bids and 10 best asks. Leaving this null will sync the full order book
         /// </summary>
         public int? Limit { get; set; }
+
+        /// <summary>
+        /// After how much time we should consider the connection dropped if no data is received for this time after the initial subscriptions
+        /// </summary>
+        public TimeSpan? InitialDataTimeout { get; set; }
 
         /// <summary>
         /// The client to use for the socket connection. When using the same client for multiple order books the connection can be shared.

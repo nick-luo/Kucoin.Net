@@ -34,8 +34,8 @@ namespace Kucoin.Net.Clients.FuturesApi
             string symbol,
             OrderSide side,
             NewOrderType type,
-            int leverage,
-            decimal quantity,
+            decimal leverage,
+            int quantity,
 
             decimal? price = null,
             TimeInForce? timeInForce = null,
@@ -69,7 +69,7 @@ namespace Kucoin.Net.Clients.FuturesApi
             parameters.AddOptionalParameter("closeOrder", closeOrder?.ToString());
             parameters.AddOptionalParameter("forceHold", forceHold?.ToString());
             parameters.AddOptionalParameter("price", price?.ToString(CultureInfo.InvariantCulture));
-            parameters.AddOptionalParameter("timeInForce", JsonConvert.SerializeObject(timeInForce, new TimeInForceConverter(false)));
+            parameters.AddOptionalParameter("timeInForce", timeInForce != null ? JsonConvert.SerializeObject(timeInForce, new TimeInForceConverter(false)): null);
             parameters.AddOptionalParameter("postOnly", postOnly?.ToString());
             parameters.AddOptionalParameter("hidden", hidden?.ToString());
             parameters.AddOptionalParameter("iceberg", iceberg);
@@ -132,9 +132,11 @@ namespace Kucoin.Net.Clients.FuturesApi
         }
 
         /// <inheritdoc />
-        public async Task<WebCallResult<IEnumerable<KucoinFuturesOrder>>> GetClosedOrdersAsync(CancellationToken ct = default)
+        public async Task<WebCallResult<IEnumerable<KucoinFuturesOrder>>> GetClosedOrdersAsync(string? symbol = null, CancellationToken ct = default)
         {
-            return await _baseClient.Execute<IEnumerable<KucoinFuturesOrder>>(_baseClient.GetUri("recentDoneOrders"), HttpMethod.Get, ct, signed: true).ConfigureAwait(false);
+            var parameters = new Dictionary<string, object>();
+            parameters.AddOptionalParameter("symbol", symbol);
+            return await _baseClient.Execute<IEnumerable<KucoinFuturesOrder>>(_baseClient.GetUri("recentDoneOrders"), HttpMethod.Get, ct, parameters, signed: true).ConfigureAwait(false);
         }
 
         /// <inheritdoc />

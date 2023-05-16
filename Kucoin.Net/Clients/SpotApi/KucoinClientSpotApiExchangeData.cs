@@ -12,6 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kucoin.Net.Objects.Models.Spot;
 using Kucoin.Net.Interfaces.Clients.SpotApi;
+using Kucoin.Net.Objects.Models.Futures;
+using Kucoin.Net.Objects;
 
 namespace Kucoin.Net.Clients.SpotApi
 {
@@ -19,6 +21,7 @@ namespace Kucoin.Net.Clients.SpotApi
     public class KucoinClientSpotApiExchangeData : IKucoinClientSpotApiExchangeData
     {
         private readonly KucoinClientSpotApi _baseClient;
+
         internal KucoinClientSpotApiExchangeData(KucoinClientSpotApi baseClient)
         {
             _baseClient = baseClient;
@@ -36,7 +39,9 @@ namespace Kucoin.Net.Clients.SpotApi
         {
             var parameters = new Dictionary<string, object>();
             parameters.AddOptionalParameter("market", market);
-            return await _baseClient.Execute<IEnumerable<KucoinSymbol>>(_baseClient.GetUri("symbols"), HttpMethod.Get, ct, parameters: parameters).ConfigureAwait(false);
+            // Testnet doesn't support V2
+            var apiVersion = _baseClient.Options.BaseAddress == KucoinApiAddresses.TestNet.SpotAddress ? 1 : 2;
+            return await _baseClient.Execute<IEnumerable<KucoinSymbol>>(_baseClient.GetUri("symbols", apiVersion), HttpMethod.Get, ct, parameters: parameters).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -92,17 +97,6 @@ namespace Kucoin.Net.Clients.SpotApi
         }
 
         /// <inheritdoc />
-        public async Task<WebCallResult<KucoinFullOrderBook>> GetOrderBookAsync(string symbol, CancellationToken ct = default)
-        {
-            symbol.ValidateKucoinSymbol();
-            var parameters = new Dictionary<string, object>
-            {
-                { "symbol", symbol }
-            };
-            return await _baseClient.Execute<KucoinFullOrderBook>(_baseClient.GetUri($"market/orderbook/level3", 3), HttpMethod.Get, ct, parameters, true).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
         public async Task<WebCallResult<IEnumerable<KucoinTrade>>> GetTradeHistoryAsync(string symbol, CancellationToken ct = default)
         {
             symbol.ValidateKucoinSymbol();
@@ -153,9 +147,42 @@ namespace Kucoin.Net.Clients.SpotApi
         }
 
         /// <inheritdoc />
+        public async Task<WebCallResult<KucoinIndexBase>> GetMarginMarkPriceAsync(string symbol, CancellationToken ct = default)
+        {
+            return await _baseClient.Execute<KucoinIndexBase>(_baseClient.GetUri($"mark-price/{symbol}/current"), HttpMethod.Get, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
         public async Task<WebCallResult<KucoinMarginConfig>> GetMarginConfigurationAsync(CancellationToken ct = default)
         {
             return await _baseClient.Execute<KucoinMarginConfig>(_baseClient.GetUri("margin/config"), HttpMethod.Get, ct).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<IEnumerable<KucoinLendingMarketEntry>>> GetLendMarketDataAsync(string asset, int? term = null, CancellationToken ct = default)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "currency", asset }
+            };
+            parameters.AddOptionalParameter("term", term);
+            return await _baseClient.Execute<IEnumerable<KucoinLendingMarketEntry>>(_baseClient.GetUri("margin/market"), HttpMethod.Get, ct, parameters).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<IEnumerable<KucoinBorrowOrderDetails>>> GetMarginTradeHistoryAsync(string asset, CancellationToken ct = default)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "currency", asset }
+            };
+            return await _baseClient.Execute<IEnumerable<KucoinBorrowOrderDetails>>(_baseClient.GetUri("margin/trade/last"), HttpMethod.Get, ct, parameters).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async Task<WebCallResult<IEnumerable<KucoinTradingPairConfiguration>>> GetMarginTradingPairConfigurationAsync(CancellationToken ct = default)
+        {
+            return await _baseClient.Execute<IEnumerable<KucoinTradingPairConfiguration>>(_baseClient.GetUri($"isolated/symbols"), HttpMethod.Get, ct, signed: true).ConfigureAwait(false);
         }
     }
 }

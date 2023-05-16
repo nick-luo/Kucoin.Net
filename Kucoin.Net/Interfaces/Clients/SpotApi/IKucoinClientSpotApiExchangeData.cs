@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Kucoin.Net.Objects.Models.Spot;
+using Kucoin.Net.Objects.Models.Futures;
 
 namespace Kucoin.Net.Interfaces.Clients.SpotApi
 {
@@ -47,7 +48,6 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <returns>List of tickers</returns>
         Task<WebCallResult<KucoinTicks>> GetTickersAsync(CancellationToken ct = default);
 
-
         /// <summary>
         /// Gets the 24 hour stats of a symbol
         /// <para><a href="https://docs.kucoin.com/#get-24hr-stats" /></para>
@@ -56,7 +56,6 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <param name="ct">Cancellation token</param>
         /// <returns>24 hour stats</returns>
         Task<WebCallResult<Kucoin24HourStat>> Get24HourStatsAsync(string symbol, CancellationToken ct = default);
-
 
         /// <summary>
         /// Gets a list of supported markets
@@ -84,14 +83,6 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <param name="ct">Cancellation token</param>
         /// <returns>Full aggregated order book</returns>
         Task<WebCallResult<KucoinOrderBook>> GetAggregatedFullOrderBookAsync(string symbol, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get a full order book for a symbol
-        /// </summary>
-        /// <param name="symbol">The symbol to get order book for</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Full order book</returns>
-        Task<WebCallResult<KucoinFullOrderBook>> GetOrderBookAsync(string symbol, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the recent trade history for a symbol
@@ -143,9 +134,46 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
 
         /// <summary>
         /// Get margin configuration
+        /// <para><a href="https://docs.kucoin.com/#get-margin-configuration-info" /></para>
         /// </summary>
         /// <param name="ct">Cancellation token</param>
         /// <returns></returns>
         Task<WebCallResult<KucoinMarginConfig>> GetMarginConfigurationAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get the mark price of a symbol
+        /// <para><a href="https://docs.kucoin.com/#get-mark-price" /></para>
+        /// </summary>
+        /// <param name="symbol">The symbol to retrieve</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinIndexBase>> GetMarginMarkPriceAsync(string symbol, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get lending market data
+        /// <para><a href="https://docs.kucoin.com/#lending-market-data" /></para>
+        /// </summary>
+        /// <param name="asset">Asset</param>
+        /// <param name="term">Filter by term</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<IEnumerable<KucoinLendingMarketEntry>>> GetLendMarketDataAsync(string asset, int? term = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get the last 300 fills for borrow/lending orders
+        /// <para><a href="https://docs.kucoin.com/#margin-trade-data" /></para>
+        /// </summary>
+        /// <param name="asset">The asset</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<IEnumerable<KucoinBorrowOrderDetails>>> GetMarginTradeHistoryAsync(string asset, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get Margin Trading Pair ConfigurationAsync
+        /// <para><a href="https://docs.kucoin.com/#query-isolated-margin-trading-pair-configuration" /></para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param> 
+        /// <returns></returns>
+        Task<WebCallResult<IEnumerable<KucoinTradingPairConfiguration>>> GetMarginTradingPairConfigurationAsync(CancellationToken ct = default);
     }
 }

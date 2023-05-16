@@ -36,32 +36,6 @@ Task<WebCallResult<object>> CancelWithdrawalAsync(string withdrawalId, Cancellat
 
 ***
 
-## CreateAccountAsync  
-
-[https://docs.kucoin.com/#create-an-account](https://docs.kucoin.com/#create-an-account)  
-<p>
-
-*Create a new account*  
-
-```csharp  
-var client = new KucoinClient();  
-var result = await client.SpotApi.Account.CreateAccountAsync(/* parameters */);  
-```  
-
-```csharp  
-Task<WebCallResult<KucoinNewAccount>> CreateAccountAsync(AccountType type, string asset, CancellationToken ct = default);  
-```  
-
-|Parameter|Description|
-|---|---|
-|type|The type of the account|
-|asset|The asset of the account|
-|_[Optional]_ ct|Cancellation token|
-
-</p>
-
-***
-
 ## CreateDepositAddressAsync  
 
 [https://docs.kucoin.com/#create-deposit-address](https://docs.kucoin.com/#create-deposit-address)  
@@ -212,11 +186,12 @@ var result = await client.SpotApi.Account.GetBasicUserFeeAsync();
 ```  
 
 ```csharp  
-Task<WebCallResult<KucoinUserFee>> GetBasicUserFeeAsync(CancellationToken ct = default);  
+Task<WebCallResult<KucoinUserFee>> GetBasicUserFeeAsync(AssetType? assetType = default, CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
 |---|---|
+|_[Optional]_ assetType|The type of asset|
 |_[Optional]_ ct|Cancellation token|
 
 </p>
@@ -364,8 +339,58 @@ Task<WebCallResult<KucoinPaginated<KucoinHistoricalWithdrawal>>> GetHistoricalWi
 
 ***
 
+## GetIsolatedMarginAccountAsync  
+
+[https://docs.kucoin.com/#query-single-isolated-margin-account-info](https://docs.kucoin.com/#query-single-isolated-margin-account-info)  
+<p>
+
+*Get isolated margin account info*  
+
+```csharp  
+var client = new KucoinClient();  
+var result = await client.SpotApi.Account.GetIsolatedMarginAccountAsync(/* parameters */);  
+```  
+
+```csharp  
+Task<WebCallResult<KucoinIsolatedMarginAccount>> GetIsolatedMarginAccountAsync(string symbol, CancellationToken ct = default);  
+```  
+
+|Parameter|Description|
+|---|---|
+|symbol|The symbol|
+|_[Optional]_ ct|Cancellation token|
+
+</p>
+
+***
+
+## GetIsolatedMarginAccountsAsync  
+
+[https://docs.kucoin.com/#query-isolated-margin-account-info](https://docs.kucoin.com/#query-isolated-margin-account-info)  
+<p>
+
+*Get isolated margin account info*  
+
+```csharp  
+var client = new KucoinClient();  
+var result = await client.SpotApi.Account.GetIsolatedMarginAccountsAsync();  
+```  
+
+```csharp  
+Task<WebCallResult<KucoinIsolatedMarginAccountsInfo>> GetIsolatedMarginAccountsAsync(CancellationToken ct = default);  
+```  
+
+|Parameter|Description|
+|---|---|
+|_[Optional]_ ct|Cancellation token|
+
+</p>
+
+***
+
 ## GetMarginAccountAsync  
 
+[https://docs.kucoin.com/#get-margin-account](https://docs.kucoin.com/#get-margin-account)  
 <p>
 
 *Get margin account info*  
@@ -387,24 +412,48 @@ Task<WebCallResult<KucoinMarginAccount>> GetMarginAccountAsync(CancellationToken
 
 ***
 
-## GetRiskLimitAsync  
+## GetRiskLimitCrossMarginAsync  
 
+[https://docs.kucoin.com/#query-the-cross-isolated-margin-risk-limit](https://docs.kucoin.com/#query-the-cross-isolated-margin-risk-limit)  
 <p>
 
-*Get cross or isolated margin risk limit*  
+*Get cross margin risk limit*  
 
 ```csharp  
 var client = new KucoinClient();  
-var result = await client.SpotApi.Account.GetRiskLimitAsync();  
+var result = await client.SpotApi.Account.GetRiskLimitCrossMarginAsync();  
 ```  
 
 ```csharp  
-Task<WebCallResult<IEnumerable<KucoinRiskLimit>>> GetRiskLimitAsync(bool? isolated = default, CancellationToken ct = default);  
+Task<WebCallResult<IEnumerable<KucoinRiskLimitCrossMargin>>> GetRiskLimitCrossMarginAsync(CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
 |---|---|
-|_[Optional]_ isolated|Request isolated info, default cross info is returned|
+|_[Optional]_ ct|Cancellation token|
+
+</p>
+
+***
+
+## GetRiskLimitIsolatedMarginAsync  
+
+[https://docs.kucoin.com/#query-the-cross-isolated-margin-risk-limit](https://docs.kucoin.com/#query-the-cross-isolated-margin-risk-limit)  
+<p>
+
+*Get isolated margin risk limit*  
+
+```csharp  
+var client = new KucoinClient();  
+var result = await client.SpotApi.Account.GetRiskLimitIsolatedMarginAsync();  
+```  
+
+```csharp  
+Task<WebCallResult<IEnumerable<KucoinRiskLimitIsolatedMargin>>> GetRiskLimitIsolatedMarginAsync(CancellationToken ct = default);  
+```  
+
+|Parameter|Description|
+|---|---|
 |_[Optional]_ ct|Cancellation token|
 
 </p>
@@ -580,7 +629,7 @@ var result = await client.SpotApi.Account.InnerTransferAsync(/* parameters */);
 ```  
 
 ```csharp  
-Task<WebCallResult<KucoinInnerTransfer>> InnerTransferAsync(string asset, AccountType from, AccountType to, decimal quantity, string? clientOrderId = default, CancellationToken ct = default);  
+Task<WebCallResult<KucoinInnerTransfer>> InnerTransferAsync(string asset, AccountType from, AccountType to, decimal quantity, string? fromTag = default, string? toTag = default, string? clientOrderId = default, CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
@@ -589,6 +638,8 @@ Task<WebCallResult<KucoinInnerTransfer>> InnerTransferAsync(string asset, Accoun
 |from|The type of the account|
 |to|The type of the account|
 |quantity|The quantity to transfer|
+|_[Optional]_ fromTag|Trading pair, required when the payment account type is isolated, e.g.: BTC-USDT|
+|_[Optional]_ toTag|Trading pair, required when the receiving account type is isolated, e.g.: BTC-USDT|
 |_[Optional]_ clientOrderId|Client order id|
 |_[Optional]_ ct|Cancellation token|
 
@@ -609,7 +660,7 @@ var result = await client.SpotApi.Account.WithdrawAsync(/* parameters */);
 ```  
 
 ```csharp  
-Task<WebCallResult<KucoinNewWithdrawal>> WithdrawAsync(string asset, string toAddress, decimal quantity, string? memo = default, bool isInner, string? remark = default, string? chain = default, CancellationToken ct = default);  
+Task<WebCallResult<KucoinNewWithdrawal>> WithdrawAsync(string asset, string toAddress, decimal quantity, string? memo = default, bool isInner, string? remark = default, string? chain = default, FeeDeductType? feeDeductType = default, CancellationToken ct = default);  
 ```  
 
 |Parameter|Description|
@@ -621,6 +672,7 @@ Task<WebCallResult<KucoinNewWithdrawal>> WithdrawAsync(string asset, string toAd
 |isInner|Internal withdrawal or not. Default false.|
 |_[Optional]_ remark|Remark for the withdrawal|
 |_[Optional]_ chain|The chain name of asset, e.g. The available value for USDT are OMNI, ERC20, TRC20, default is OMNI. This only apply for multi-chain currency, and there is no need for single chain currency.|
+|_[Optional]_ feeDeductType|Fee deduction type|
 |_[Optional]_ ct|Cancellation token|
 
 </p>

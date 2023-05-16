@@ -1,11 +1,11 @@
 ﻿using CryptoExchange.Net.Objects;
 using Kucoin.Net.Enums;
+using Kucoin.Net.Objects.Models;
+using Kucoin.Net.Objects.Models.Spot;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Kucoin.Net.Objects.Models;
-using Kucoin.Net.Objects.Models.Spot;
 
 namespace Kucoin.Net.Interfaces.Clients.SpotApi
 {
@@ -97,6 +97,16 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
             CancellationToken ct = default);
 
         /// <summary>
+        /// Places bulk orders
+        /// <para><a href="https://docs.kucoin.com/#place-bulk-orders" /></para>
+        /// </summary>
+        /// <param name="symbol">The symbol the order is for</param>
+        /// <param name="orders">Up to 5 orders to be placed at the same time</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>List of new orders</returns>
+        Task<WebCallResult<KucoinBulkOrderResponse>> PlaceBulkOrderAsync(string symbol, IEnumerable<KucoinBulkOrderRequestEntry> orders, CancellationToken ct = default);
+
+        /// <summary>
         /// Cancel an order
         /// <para><a href="https://docs.kucoin.com/#cancel-an-order" /></para>
         /// </summary>
@@ -119,9 +129,10 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <para><a href="https://docs.kucoin.com/#cancel-all-orders" /></para>
         /// </summary>
         /// <param name="symbol">Only cancel orders for this symbol</param>
+        /// <param name="tradeType">Only cancel orders for this type</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>List of canceled orders</returns>
-        Task<WebCallResult<KucoinCanceledOrders>> CancelAllOrdersAsync(string? symbol = null, CancellationToken ct = default);
+        Task<WebCallResult<KucoinCanceledOrders>> CancelAllOrdersAsync(string? symbol = null, TradeType? tradeType = null, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of orders
@@ -226,7 +237,7 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
         /// <param name="clientOrderId">Client order id</param>
         /// <param name="stopCondition">Stop price condition</param>
         /// <param name="stopPrice">Price to trigger the order placement</param>
-        /// <param name="tradeType">Trade type</param>        
+        /// <param name="tradeType">Trade type</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns></returns>
         Task<WebCallResult<KucoinNewOrder>> PlaceStopOrderAsync(
@@ -241,7 +252,7 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
             decimal? price = null,
             decimal? quantity = null,
             TimeInForce? timeInForce = null,
-            DateTime? cancelAfter = null,
+            TimeSpan? cancelAfter = null,
             bool? postOnly = null,
             bool? hidden = null,
             bool? iceberg = null,
@@ -358,5 +369,194 @@ namespace Kucoin.Net.Interfaces.Clients.SpotApi
             string tradeId,
             decimal quantity,
             CancellationToken ct = default);
+
+        /// <summary>
+        /// Get outstanding borrow records
+        /// <para><a href="https://docs.kucoin.com/#get-repay-record" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinRepayRecord>>> GetOpenBorrowRecordsAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get repaid borrow records
+        /// <para><a href="https://docs.kucoin.com/#get-repayment-record" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinBorrowRecord>>> GetClosedBorrowRecordsAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Repay all borrowed for an asset
+        /// <para><a href="https://docs.kucoin.com/#one-click-repayment" /></para>
+        /// </summary>
+        /// <param name="asset">Asset to repay for</param>
+        /// <param name="strategy">Repayment strategy</param>
+        /// <param name="quantity">Quantity to repay</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> RepayAllAsync(string asset, RepaymentStrategy strategy, decimal quantity, CancellationToken ct = default);
+
+        /// <summary>
+        /// Place a new lend order
+        /// <para><a href="https://docs.kucoin.com/#post-lend-order" /></para>
+        /// </summary>
+        /// <param name="asset">Asset to lend</param>
+        /// <param name="quantity">Quantity to lend</param>
+        /// <param name="dailyInterestRate">Daily interest rate. 0.01 = 1%</param>
+        /// <param name="term">The term in days</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinNewOrder>> PlaceLendOrderAsync(string asset, decimal quantity, decimal dailyInterestRate, int term, CancellationToken ct = default);
+
+        /// <summary>
+        /// Cancel an active lend order
+        /// <para><a href="https://docs.kucoin.com/#cancel-lend-order" /></para>
+        /// </summary>
+        /// <param name="orderId">Id of the order to cancel</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> CancelLendOrderAsync(string orderId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Set up automatic lending for an asset
+        /// <para><a href="https://docs.kucoin.com/#set-auto-lend" /></para>
+        /// </summary>
+        /// <param name="asset">The asset to lend</param>
+        /// <param name="isEnabled">Is enabled or not</param>
+        /// <param name="retainQuantity">Reserved quantity in main account</param>
+        /// <param name="dailyInterestRate">Daily interest rate. 0.01 = 1%</param>
+        /// <param name="term">The term in days</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> SetAutoLendAsync(string asset, bool isEnabled, decimal? retainQuantity = null, decimal? dailyInterestRate = null, int? term = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get open lend orders
+        /// <para><a href="https://docs.kucoin.com/#get-active-order" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinLendOrder>>> GetOpenLendOrdersAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get closed lend orders
+        /// <para><a href="https://docs.kucoin.com/#get-lent-history" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinLendOrder>>> GetClosedLendOrdersAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get active lends
+        /// <para><a href="https://docs.kucoin.com/#get-active-lend-order-list" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinOpenLend>>> GetOpenLendsAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get active lends
+        /// <para><a href="https://docs.kucoin.com/#get-settled-lend-order-history" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinClosedLend>>> GetClosedLendsAsync(string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get lending status per asset
+        /// <para><a href="https://docs.kucoin.com/#get-account-lend-record" /></para>
+        /// </summary>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<IEnumerable<KucoinLendHistory>>> GetLendingStatusAsync(string? asset = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Places an isolated Borrow order
+        /// <para><a href="https://docs.kucoin.com/#isolated-margin-borrowing" /></para>
+        /// </summary>
+        /// <param name="symbol">The symbol</param>
+        /// <param name="asset">Currency to Borrow e.g USDT etc</param>
+        /// <param name="quantity">Total size</param>
+        /// <param name="type">The type of the order (FOK, IOC)</param>
+        /// <param name="maxRate">The max interest rate. All interest rates are acceptable if this field is left empty</param>
+        /// <param name="term">term (Unit: Day). All terms are acceptable if this field is left empty. Please note to separate the terms via comma. For example, 7,14,28</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>The id of the new order</returns>
+        Task<WebCallResult<KucoinNewIsolatedBorrowOrder>> PlaceIsolatedBorrowOrderAsync(
+           string symbol,
+           string asset,
+           decimal quantity,
+           BorrowOrderType type,
+           decimal? maxRate = null,
+           string? term = null,
+           CancellationToken ct = default);
+
+        /// <summary>
+        /// Get outstanding isolated borrow records
+        /// <para><a href="https://docs.kucoin.com/#get-repay-record" /></para>
+        /// </summary>
+        /// <param name="symbol">Filter by symbol</param>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinIsolatedOpenBorrowRecord>>> GetIsolatedOpenBorrowRecordsAsync(string? symbol = null, string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get repaid isolated borrow records
+        /// <para><a href="https://docs.kucoin.com/#query-repayment-records" /></para>
+        /// </summary>
+        /// <param name="symbol">Filter by symbol</param>
+        /// <param name="asset">Filter by asset</param>
+        /// <param name="page">The page to retrieve</param>
+        /// <param name="pageSize">The page size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<KucoinPaginated<KucoinIsolatedClosedBorrowRecord>>> GetIsolatedClosedBorrowRecordsAsync(string? symbol = null, string? asset = null, int? page = null, int? pageSize = null, CancellationToken ct = default);
+
+        /// <summary>
+        /// Repay all isolated borrowed for an asset
+        /// <para><a href="https://docs.kucoin.com/#quick-repayment" /></para>
+        /// </summary>
+        /// <param name="symbol">Symbol to repay for</param>
+        /// <param name="asset">Asset to repay for</param>
+        /// <param name="strategy">Repayment strategy</param>
+        /// <param name="quantity">Quantity to repay</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> RepayAllIsolatedAsync(string symbol, string asset, RepaymentStrategy strategy, decimal quantity, CancellationToken ct = default);
+
+        /// <summary>
+        /// Repay a Single Order
+        /// <para><a href="https://docs.kucoin.com/#single-repayment" /></para>
+        /// </summary>
+        /// <param name="symbol">Symbol to Pay e.g BTC-USDT etc</param>
+        /// <param name="asset">Asset to Pay e.g USDT etc</param>
+        /// <param name="loanId">Loan ID of borrow order</param>
+        /// <param name="quantity">Repayment size</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> RepaySingleIsolatedBorrowOrderAsync(string symbol, string asset, decimal quantity, string loanId, CancellationToken ct = default);
     }
 }

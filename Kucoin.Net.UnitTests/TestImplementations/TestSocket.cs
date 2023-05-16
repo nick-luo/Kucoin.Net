@@ -17,6 +17,11 @@ namespace Kucoin.Net.UnitTests.TestImplementations
         public event Action<string> OnMessage;
         public event Action<Exception> OnError;
         public event Action OnOpen;
+#pragma warning disable 0067
+        public event Action OnReconnecting;
+        public event Action OnReconnected;
+        public Func<Task<Uri>> GetReconnectionUrl { get; set; }
+#pragma warning restore 0067
 #pragma warning restore 8618
 
         public int Id { get; }
@@ -40,6 +45,10 @@ namespace Kucoin.Net.UnitTests.TestImplementations
 
         public double IncomingKbps => 0;
 
+        public Uri Uri => new Uri("");
+
+        public TimeSpan KeepAliveInterval { get; set; }
+
         public Task<bool> ConnectAsync()
         {
             Connected = CanConnect;
@@ -56,7 +65,13 @@ namespace Kucoin.Net.UnitTests.TestImplementations
 
         public void Reset()
         {
-            
+
+        }
+
+        public async Task ProcessAsync()
+        {
+            while (Connected)
+                await Task.Delay(10);
         }
 
         public Task CloseAsync()
@@ -97,6 +112,11 @@ namespace Kucoin.Net.UnitTests.TestImplementations
         public void InvokeError(Exception error)
         {
             OnError?.Invoke(error);
+        }
+
+        public Task ReconnectAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
     {
         /// <summary>
         /// Gets account overview
-        /// <para><a href="https://docs.kucoin.center/futures/#get-account-overview" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-account-overview" /></para>
         /// </summary>
         /// <param name="asset">Get the accounts for a specific asset</param>
         /// <param name="ct">Cancellation token</param>
@@ -26,7 +26,7 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get transaction history
-        /// <para><a href="https://docs.kucoin.center/futures/#get-transaction-history" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-transaction-history" /></para>
         /// </summary>
         /// <param name="asset">Filter by asset</param>
         /// <param name="type">Filter by type</param>
@@ -40,89 +40,30 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
         Task<WebCallResult<KucoinPaginatedSlider<KucoinAccountTransaction>>> GetTransactionHistoryAsync(string? asset = null, TransactionType? type = null, DateTime? startTime = null, DateTime? endTime = null, int? offset = null, int? pageSize = null, bool? forward = null, CancellationToken ct = default);
 
         /// <summary>
-        /// Get the deposit address for an asset
-        /// <para><a href="https://docs.kucoin.center/futures/#get-deposit-address" /></para>
-        /// </summary>
-        /// <param name="asset">The asset to get deposit address for</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Deposit address</returns>
-        Task<WebCallResult<KucoinDepositAddress>> GetDepositAddressAsync(string asset, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get deposit history
-        /// <para><a href="https://docs.kucoin.center/futures/#get-deposits-list" /></para>
-        /// </summary>
-        /// <param name="asset">Filter by asset</param>
-        /// <param name="status">Filter by status</param>
-        /// <param name="startTime">Filter by start time</param>
-        /// <param name="endTime">Filter by end time</param>
-        /// <param name="currentPage">Page to retrieve</param>
-        /// <param name="pageSize">Items per page</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Deposit history</returns>
-        Task<WebCallResult<KucoinPaginated<KucoinDeposit>>> GetDepositHistoryAsync(string? asset = null, DepositStatus? status = null, DateTime? startTime = null, DateTime? endTime = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get the withdrawal limit
-        /// <para><a href="https://docs.kucoin.center/futures/#get-withdrawal-limit" /></para>
-        /// </summary>
-        /// <param name="asset">The asset to get limits for</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Withdrawal limit info</returns>
-        Task<WebCallResult<KucoinFuturesWithdrawalQuota>> GetWithdrawalLimitAsync(string asset, CancellationToken ct = default);
-
-        /// <summary>
-        /// Withdraw funds
-        /// <para><a href="https://docs.kucoin.center/futures/#withdraw-funds" /></para>
-        /// </summary>
-        /// <param name="asset">Asset to withdraw</param>
-        /// <param name="address">Address to withdraw to</param>
-        /// <param name="quantity">Quantity to withdraw</param>
-        /// <param name="isInner">Internal transfer (default false)</param>
-        /// <param name="remark">Remarks</param>
-        /// <param name="chain">Chain to use</param>
-        /// <param name="memo">Memo for the withdrawal</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Withdrawal id</returns>
-        Task<WebCallResult<KucoinNewWithdrawal>> WithdrawAsync(string asset, string address, decimal quantity, bool? isInner = null, string? remark = null, string? chain = null, string? memo = null, CancellationToken ct = default);
-
-        /// <summary>
-        /// Get withdraw history
-        /// <para><a href="https://docs.kucoin.center/futures/#get-withdrawal-list" /></para>
-        /// </summary>
-        /// <param name="asset">Filter by asset</param>
-        /// <param name="status">Filter by status</param>
-        /// <param name="startTime">Filter by start time</param>
-        /// <param name="endTime">Filter by end time</param>
-        /// <param name="currentPage">Page to retrieve</param>
-        /// <param name="pageSize">Items per page</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Withdrawal history</returns>
-        Task<WebCallResult<KucoinPaginated<KucoinWithdrawal>>> GetWithdrawHistoryAsync(string? asset = null, WithdrawalStatus? status = null, DateTime? startTime = null, DateTime? endTime = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
-
-        /// <summary>
-        /// Cancel a withdrawal in process
-        /// <para><a href="https://docs.kucoin.center/futures/#cancel-withdrawal" /></para>
-        /// </summary>
-        /// <param name="withdrawalId">The id of the withdrawal to cancel</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Withdrawal limit info</returns>
-        Task<WebCallResult> CancelWithdrawalAsync(string withdrawalId, CancellationToken ct = default);
-
-        /// <summary>
         /// Transfer funds from futures to main account
-        /// <para><a href="https://docs.kucoin.center/futures/#transfer-funds-to-kucoin-main-account-2" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#transfer-to-main-or-trade-account" /></para>
         /// </summary>
         /// <param name="asset">Asset to transfer</param>
-        /// <param name="clientId">Client identifier for the operation, needs to be unique. Guid.NewGuid() suggested</param>
-        /// <param name="quantity">Quantity to withdraw</param>
+        /// <param name="quantity">Quantity to transfer</param>
+        /// <param name="receiveAccountType">Receiving account type</param>
         /// <param name="ct">Cancellation token</param>
-        /// <returns>Withdrawal id</returns>
-        Task<WebCallResult<KucoinTransferResult>> TransferToMainAccountAsync(string asset, decimal quantity, string? clientId = null, CancellationToken ct = default);
+        /// <returns>Transfer id</returns>
+        Task<WebCallResult<KucoinTransferResult>> TransferToMainAccountAsync(string asset, decimal quantity, AccountType receiveAccountType, CancellationToken ct = default);
+
+        /// <summary>
+        /// Transfer funds from main or trade account to futures
+        /// <para><a href="https://docs.kucoin.com/futures/#transfer-to-futures-account" /></para>
+        /// </summary>
+        /// <param name="asset">Asset to transfer</param>
+        /// <param name="quantity">Quantity to transfer</param>
+        /// <param name="payAccountType">Account to move funds from</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult> TransferToFuturesAccountAsync(string asset, decimal quantity, AccountType payAccountType, CancellationToken ct = default);
 
         /// <summary>
         /// Cancel a transfer from futures account to main account
-        /// <para><a href="https://docs.kucoin.center/futures/#cancel-transfer-out-request" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#cancel-transfer-out-request" /></para>
         /// </summary>
         /// <param name="applyId">Transfer id to cancel</param>
         /// <param name="ct">Cancellation token</param>
@@ -131,21 +72,22 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get transfer to main account history
-        /// <para><a href="https://docs.kucoin.center/futures/#get-transfer-out-request-records-2" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-transfer-out-request-records-2" /></para>
         /// </summary>
         /// <param name="asset">Filter by asset</param>
         /// <param name="startTime">Filter by start time</param>
         /// <param name="endTime">Filter by end time</param>
+        /// <param name="status">Filter by status</param>
         /// <param name="currentPage">Current page</param>
         /// <param name="pageSize">Size of a page</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns></returns>
-        Task<WebCallResult<KucoinPaginated<KucoinTransfer>>> GetTransferToMainAccountHistoryAsync(string asset, DateTime? startTime = null, DateTime? endTime = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
+        Task<WebCallResult<KucoinPaginated<KucoinTransfer>>> GetTransferToMainAccountHistoryAsync(string? asset = null, DateTime? startTime = null, DateTime? endTime = null, DepositStatus? status = null, int? currentPage = null, int? pageSize = null, CancellationToken ct = default);
 
 
         /// <summary>
         /// Get the total value of active orders
-        /// <para><a href="https://docs.kucoin.center/futures/#active-order-value-calculation" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#active-order-value-calculation" /></para>
         /// </summary>        
         /// <param name="symbol">Symbol</param>
         /// <param name="ct">Cancellation token</param>
@@ -154,7 +96,7 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get details on a position
-        /// <para><a href="https://docs.kucoin.center/futures/#get-position-details" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-position-details" /></para>
         /// </summary>
         /// <param name="symbol">Contract symbol</param>
         /// <param name="ct">Cancellation token</param>
@@ -163,15 +105,16 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get list of positions
-        /// <para><a href="https://docs.kucoin.center/futures/#get-position-list" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-position-list" /></para>
         /// </summary>
+        /// <param name="asset">Filter by asset</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Position info</returns>
-        Task<WebCallResult<IEnumerable<KucoinPosition>>> GetPositionsAsync(CancellationToken ct = default);
+        Task<WebCallResult<IEnumerable<KucoinPosition>>> GetPositionsAsync(string? asset = null, CancellationToken ct = default);
 
         /// <summary>
         /// Enable/disable auto deposit margin
-        /// <para><a href="https://docs.kucoin.center/futures/#enable-disable-of-auto-deposit-margin" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#enable-disable-of-auto-deposit-margin" /></para>
         /// </summary>
         /// <param name="symbol">Symbol to change for</param>
         /// <param name="enabled">Enable or disable</param>
@@ -181,7 +124,7 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Add margin
-        /// <para><a href="https://docs.kucoin.center/futures/#add-margin-manually" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#add-margin-manually" /></para>
         /// </summary>
         /// <param name="symbol">Symbol</param>
         /// <param name="quantity">Quantity to add</param>
@@ -192,7 +135,7 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
 
         /// <summary>
         /// Get funding history
-        /// <para><a href="https://docs.kucoin.center/futures/#get-funding-history" /></para>
+        /// <para><a href="https://docs.kucoin.com/futures/#get-funding-history" /></para>
         /// </summary>
         /// <param name="symbol">Symbol</param>
         /// <param name="startTime">Filter by start time</param>
@@ -204,5 +147,21 @@ namespace Kucoin.Net.Interfaces.Clients.FuturesApi
         /// <returns></returns>
         Task<WebCallResult<KucoinPaginatedSlider<KucoinFundingItem>>> GetFundingHistoryAsync(string symbol, DateTime? startTime = null, DateTime? endTime = null, int? offset = null, int? pageSize = null, bool? forward = null, CancellationToken ct = default);
 
+        /// <summary>
+        /// Get risk limit level
+        /// </summary>
+        /// <param name="symbol">Symbol</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<IEnumerable<Objects.Models.Futures.KucoinRiskLimit>>> GetRiskLimitLevelAsync(string symbol, CancellationToken ct = default);
+
+        /// <summary>
+        /// Set risk limit level
+        /// </summary>
+        /// <param name="symbol">Symbol</param>
+        /// <param name="level">Risk limit level</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<WebCallResult<bool>> SetRiskLimitLevelAsync(string symbol, int level, CancellationToken ct = default);
     }
 }

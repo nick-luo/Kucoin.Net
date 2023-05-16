@@ -7,17 +7,108 @@ Kucoin.Net is a wrapper around the Kucoin API as described on [Kucoin](https://d
 
 [Documentation](https://jkorf.github.io/Kucoin.Net/)
 
-## Donations
-I develop and maintain this package on my own for free in my spare time. Donations are greatly appreciated. If you prefer to donate any other currency please contact me.
+## Support the project
+I develop and maintain this package on my own for free in my spare time, any support is greatly appreciated.
+
+### Referral link
+Sign up using the following referral link to pay a small percentage of the trading fees you pay to support the project instead of paying them straight to Kucoin. This doesn't cost you a thing!
+[Link](https://www.kucoin.com/ucenter/signup?rcode=RguMux)
+
+### Donate
+Make a one time donation in a crypto currency of your choice. If you prefer to donate a currency not listed here please contact me.
 
 **Btc**:  12KwZk3r2Y3JZ2uMULcjqqBvXmpDwjhhQS  
 **Eth**:  0x069176ca1a4b1d6e0b7901a6bc0dbf3bb0bf5cc2  
 **Nano**: xrb_1ocs3hbp561ef76eoctjwg85w5ugr8wgimkj8mfhoyqbx4s1pbc74zggw7gs  
 
+### Sponsor
+Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
+
 ## Discord
 A Discord server is available [here](https://discord.gg/MSpeEtSY8t). Feel free to join for discussion and/or questions around the CryptoExchange.Net and implementation libraries.
 
 ## Release notes
+* Version 4.3.3 - 15 Apr 2023
+    * Fixed futures ping, preventing regular disconnects
+    * Added basic high frequency endpoints
+    * Fixed testnet SpotApi.GetSymbolsAsync endpoint
+    * Added futures RiskLimit endpoints
+    * Added futures TransferToFutures endpoint
+    * Added various new optional parameters
+    * Removed deprecated endpoints
+
+* Version 4.3.2 - 18 Mar 2023
+    * Added HighFrequency account type
+    * Added Network property to asset details model
+    * Fixed Futures api size parameter type
+
+* Version 4.3.1 - 14 Feb 2023
+    * Updated CryptoExchange.Net
+
+* Version 4.3.0 - 05 Feb 2023
+    * Updated GetSymbolsAsync to V2 endpoint
+    * Added MinFunds property to Symbols model
+    * Added missing Network properties on Withdraw/Deposit models
+    * Added feeDeductType parameter on WithdrawAsync endpoint
+
+* Version 4.2.1 - 21 Nov 2022
+    * Fixed reconnect url
+
+* Version 4.2.0 - 17 Nov 2022
+    * Updated CryptoExchange.Net
+    * Removed Api Credentials need for order book endpoints
+
+* Version 4.1.0 - 11 Oct 2022
+    * Fixed leverage field being an int instead of decimal
+    * Fixed CancelAfter property on order model
+    * Added fromTag and toTag to InnerTransferAsync endpoint
+    * Fixed PlaceIsolatedBorrowOrderAsync type parameter
+
+* Version 4.0.17 - 15 Aug 2022
+    * Fixed SpotApi.Trading.PlaceStopOrderAsync cancelAfter parameter
+    * Fixed KucoinBalanceUpdate Timestamp property not getting deserialized correctly
+    * Fixed KucoinBorrowRecord RepayTime deserialization
+
+* Version 4.0.16 - 31 Jul 2022
+    * Added PlaceBulkOrderAsync endpoint
+    * Fixed QuantityStep mapping on ISpotClient GetSymbolsAsync
+
+* Version 4.0.15 - 18 Jul 2022
+    * Fix for websocket not reconnecting
+    * Updated CryptoExchange.Net
+
+* Version 4.0.14 - 16 Jul 2022
+    * Added isolated margin endpoints
+    * Updated xml api docs references
+    * Updated CryptoExchange.Net
+
+* Version 4.0.13 - 10 Jul 2022
+    * Updated CryptoExchange.Net
+
+* Version 4.0.12 - 12 Jun 2022
+    * Added margin endpoints
+    * Updated CryptoExchange.Net
+
+* Version 4.0.11 - 24 May 2022
+    * Updated CryptoExchange.Net
+
+* Version 4.0.10 - 22 May 2022
+    * Fixed MaxSocketConnections incorrectly being set to 10 instead of 50
+    * Added TradeType filter to CancelAllOrdersAsync
+    * Updated CryptoExchange.Net
+
+* Version 4.0.9 - 08 May 2022
+    * Removed deprecated spot GetOrderBookAsync endpoint and fixed the CommonSpotClient order book endpoint
+    * Updated CryptoExchange.Net
+
+* Version 4.0.8 - 01 May 2022
+    * Updated CryptoExchange.Net which fixed an timing related issue in the websocket reconnection logic
+    * Added seconds representation to KlineInterval enum
+
+* Version 4.0.7 - 21 Apr 2022
+    * Fixed timeInForce parameter being sent as null if not specified
+    * Fixed typo
+
 * Version 4.0.6 - 14 Apr 2022
     * Fixed NullReference exception when PlaceOrder on common futures client fails
     * Fixed deserialization error on PlaceMarginOrderAsync
