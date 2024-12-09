@@ -5,7 +5,7 @@ namespace Kucoin.Net.Objects.Models.Futures
     /// <summary>
     /// Futures account overview
     /// </summary>
-    public class KucoinAccountOverview
+    public record KucoinAccountOverview
     {
         /// <summary>
         /// Account equity = marginBalance + Unrealized PNL 
@@ -41,5 +41,10 @@ namespace Kucoin.Net.Objects.Models.Futures
         /// </summary>
         [JsonProperty("currency")]
         public string Asset { get; set; } = string.Empty;
+        /// <summary>
+        /// Cross margin risk ratio
+        /// </summary>
+        [JsonProperty("riskRatio")]
+        public decimal? RiskRatio { get; set; }
     }
 }

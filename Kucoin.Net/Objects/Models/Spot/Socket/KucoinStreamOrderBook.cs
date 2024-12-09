@@ -9,7 +9,7 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
     /// <summary>
     /// Order book info
     /// </summary>
-    public class KucoinStreamOrderBook
+    public record KucoinStreamOrderBook
     {
         /// <summary>
         /// The sequence id of the first event this order book update covers
@@ -41,7 +41,7 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
     /// <summary>
     /// Order book changes
     /// </summary>
-    public class KucoinStreamOrderBookChanged
+    public record KucoinStreamOrderBookChanged
     {
         /// <summary>
         /// The changes in bids
@@ -51,13 +51,21 @@ namespace Kucoin.Net.Objects.Models.Spot.Socket
         /// The changes in asks
         /// </summary>
         public IEnumerable<KucoinStreamOrderBookEntry> Asks { get; set; } = Array.Empty<KucoinStreamOrderBookEntry>();
+        /// <summary>
+        /// Timestamp
+        /// </summary>
+        [JsonProperty("timestamp"), JsonConverter(typeof(DateTimeConverter))]
+        public DateTime? Timestamp { get; set; }
+
+        [JsonProperty("ts"), JsonConverter(typeof(DateTimeConverter))]
+        internal DateTime? Ts { set => Timestamp = value; }
     }
 
     /// <summary>
     /// Order book entry
     /// </summary>
     [JsonConverter(typeof(ArrayConverter))]
-    public class KucoinStreamOrderBookEntry: ISymbolOrderSequencedBookEntry
+    public record KucoinStreamOrderBookEntry: ISymbolOrderSequencedBookEntry
     {
         /// <summary>
         /// The price of the change

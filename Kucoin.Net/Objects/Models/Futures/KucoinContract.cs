@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CryptoExchange.Net.Converters;
+using Kucoin.Net.Converters;
 using Newtonsoft.Json;
 
 namespace Kucoin.Net.Objects.Models.Futures
@@ -8,7 +9,7 @@ namespace Kucoin.Net.Objects.Models.Futures
     /// <summary>
     /// Contract info
     /// </summary>
-    public class KucoinContract
+    public record KucoinContract
     {
         /// <summary>
         /// Base asset
@@ -206,9 +207,11 @@ namespace Kucoin.Net.Objects.Models.Futures
         /// </summary>
         public decimal? PredictedFundingFeeRate { get; set; }
         /// <summary>
-        /// Next funding rate time
+        /// Next funding rate time. This time may not be accurate up to a couple of seconds.
+        /// This is due to the fact that the API returns this value as an offset from the current time, 
+        /// but we have no way of knowing the exact time the API returned this value.
         /// </summary>
-        [JsonConverter(typeof(DateTimeConverter))]
+        [JsonConverter(typeof(NextFundingRateTimeConverter))]
         public DateTime? NextFundingRateTime { get; set; }
         /// <summary>
         /// Source exchanges
@@ -242,5 +245,20 @@ namespace Kucoin.Net.Objects.Models.Futures
         /// Funding quote symbol
         /// </summary>
         public string? FundingQuoteSymbol1M { get; set; }
+        /// <summary>
+        /// Whether symbols supports cross margin position
+        /// </summary>
+        [JsonProperty("supportCross")]
+        public bool SupportsCross { get; set; }
+        /// <summary>
+        /// Maximum limit buying price
+        /// </summary>
+        [JsonProperty("buyLimit")]
+        public decimal? MaxLimitBuyPrice { get; set; }
+        /// <summary>
+        /// Minimum limit selling price
+        /// </summary>
+        [JsonProperty("sellLimit")]
+        public decimal? MinLimitSellPrice { get; set; }
     }
 }

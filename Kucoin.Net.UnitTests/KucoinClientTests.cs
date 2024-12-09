@@ -1,17 +1,19 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Reflection;
-using CryptoExchange.Net.Objects;
 using Kucoin.Net.Objects;
 using Kucoin.Net.UnitTests.TestImplementations;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using CryptoExchange.Net.Sockets;
 using Kucoin.Net.Objects.Internal;
 using Kucoin.Net.Clients;
-using Kucoin.Net.Clients.SpotApi;
+using NUnit.Framework.Legacy;
+using System.Collections.Generic;
+using System.Net.Http;
+using CryptoExchange.Net.Clients;
+using CryptoExchange.Net.Converters.JsonNet;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Kucoin.Net.Interfaces.Clients;
+using CryptoExchange.Net.Objects;
 
 namespace Kucoin.Net.UnitTests
 {
@@ -22,7 +24,7 @@ namespace Kucoin.Net.UnitTests
         public async Task ReceivingError_Should_ReturnErrorAndNotSuccess()
         {
             // arrange
-            var client = TestHelpers.CreateClient(new KucoinClientOptions());
+            var client = TestHelpers.CreateClient();
             var resultObj = new KucoinResult<object>()
             {
                 Code = 400001,
@@ -30,38 +32,38 @@ namespace Kucoin.Net.UnitTests
                 Message = "Error occured"
             };
 
-            TestHelpers.SetResponse((KucoinClient)client, JsonConvert.SerializeObject(resultObj));
+            TestHelpers.SetResponse((KucoinRestClient)client, JsonConvert.SerializeObject(resultObj));
 
             // act
             var result = await client.SpotApi.ExchangeData.GetAssetsAsync();
 
             // assert
-            Assert.IsFalse(result.Success);
-            Assert.IsNotNull(result.Error);
-            Assert.IsTrue(result.Error!.Code == 400001);
-            Assert.IsTrue(result.Error.Message == "Error occured");
+            ClassicAssert.IsFalse(result.Success);
+            ClassicAssert.IsNotNull(result.Error);
+            Assert.That(result.Error!.Code == 400001);
+            Assert.That(result.Error.Message == "Error occured");
         }
 
         [TestCase()]
         public async Task ReceivingHttpErrorWithNoJson_Should_ReturnErrorAndNotSuccess()
         {
             // arrange
-            var client = TestHelpers.CreateClient(new KucoinClientOptions());
-            TestHelpers.SetResponse((KucoinClient)client, "", System.Net.HttpStatusCode.BadRequest);
+            var client = TestHelpers.CreateClient();
+            TestHelpers.SetResponse((KucoinRestClient)client, "", System.Net.HttpStatusCode.BadRequest);
 
             // act
             var result = await client.SpotApi.ExchangeData.GetAssetsAsync();
 
             // assert
-            Assert.IsFalse(result.Success);
-            Assert.IsNotNull(result.Error);
+            ClassicAssert.IsFalse(result.Success);
+            ClassicAssert.IsNotNull(result.Error);
         }
 
         [TestCase()]
         public async Task ReceivingHttpErrorWithJsonError_Should_ReturnErrorAndNotSuccess()
         {
             // arrange
-            var client = TestHelpers.CreateClient(new KucoinClientOptions());
+            var client = TestHelpers.CreateClient();
             var resultObj = new KucoinResult<object>()
             {
                 Code = 400001,
@@ -69,75 +71,149 @@ namespace Kucoin.Net.UnitTests
                 Message = "Error occured"
             };
 
-            TestHelpers.SetResponse((KucoinClient)client, JsonConvert.SerializeObject(resultObj), System.Net.HttpStatusCode.BadRequest);
+            TestHelpers.SetResponse((KucoinRestClient)client, JsonConvert.SerializeObject(resultObj), System.Net.HttpStatusCode.BadRequest);
 
             // act
             var result = await client.SpotApi.ExchangeData.GetAssetsAsync();
 
             // assert
-            Assert.IsFalse(result.Success);
-            Assert.IsNotNull(result.Error);
-            Assert.IsTrue(result.Error!.Code == 400001);
-            Assert.IsTrue(result.Error.Message == "Error occured");
-        }
-
-        [TestCase("BTC-USDT", true)]
-        [TestCase("NANO-USDT", true)]
-        [TestCase("NANO-BTC", true)]
-        [TestCase("ETH-BTC", true)]
-        [TestCase("BE-ETC", true)]
-        [TestCase("NANO-USDTDASADS", true)]
-        [TestCase("A-USDTDASADS", true)]
-        [TestCase("-USDTDASADSD", false)]
-        [TestCase("BTCUSDT", false)]
-        [TestCase("BTCUSD", false)]
-        public void CheckValidKucoinSymbol(string symbol, bool isValid)
-        {
-            if (isValid)
-                Assert.DoesNotThrow(symbol.ValidateKucoinSymbol);
-            else
-                Assert.Throws(typeof(ArgumentException), symbol.ValidateKucoinSymbol);
+            ClassicAssert.IsFalse(result.Success);
+            ClassicAssert.IsNotNull(result.Error);
+            Assert.That(result.Error!.Code == 400001);
+            Assert.That(result.Error.Message == "Error occured");
         }
 
         [Test]
-        public void CheckRestInterfaces()
+        public void CheckSignatureExample()
         {
-            var assembly = Assembly.GetAssembly(typeof(KucoinClient));
-            var ignore = new string[] { "IKucoinClientSpot" };
-            var clientInterfaces = assembly.GetTypes().Where(t => t.Name.StartsWith("IKucoinClientSpot") && !ignore.Contains(t.Name));
+            var authProvider = new KucoinAuthenticationProvider(
+                new KucoinApiCredentials("5c2db93503aa674c74a31734", "f03a5284-5c39-4aaa-9b20-dea10bdcf8e3", "QWIxMjM0NTY3OCkoKiZeJSQjQA==")
+                );
+            var client = (RestApiClient)new KucoinRestClient().SpotApi;
 
-            foreach (var clientInterface in clientInterfaces)
-            {
-                var implementation = assembly.GetTypes().Single(t => t.IsAssignableTo(clientInterface) && t != clientInterface);
-                int methods = 0;
-                foreach (var method in implementation.GetMethods().Where(m => m.ReturnType.IsAssignableTo(typeof(Task))))
+            CryptoExchange.Net.Testing.TestHelpers.CheckSignature(
+                client,
+                authProvider,
+                HttpMethod.Post,
+                "/api/v1/deposit-addresses",
+                (uriParams, bodyParams, headers) =>
                 {
-                    var interfaceMethod = clientInterface.GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
-                    Assert.NotNull(interfaceMethod, $"{method.Name} not found in interface {clientInterface.Name}");
-                    methods++;
-                }
-                Debug.WriteLine($"{clientInterface.Name} {methods} methods validated");
-            }
+                    return headers["KC-API-SIGN"].ToString();
+                },
+                "7QP/oM0ykidMdrfNEUmng8eZjg/ZvPafjIqmxiVfYu4=",
+                new Dictionary<string, object>
+                {
+                    { "currency", "BTC" }
+                },
+                time: DateTimeConverter.ConvertFromMilliseconds(1547015186532));
         }
 
         [Test]
-        public void CheckSocketInterfaces()
+        public void CheckInterfaces()
         {
-            var assembly = Assembly.GetAssembly(typeof(KucoinSocketClientSpotStreams));
-            var clientInterfaces = assembly.GetTypes().Where(t => t.Name.StartsWith("IKucoinSocketClientSpot"));
+            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingRestInterfaces<KucoinRestClient>();
+            CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<KucoinSocketClient>();
+        }
 
-            foreach (var clientInterface in clientInterfaces)
-            {
-                var implementation = assembly.GetTypes().Single(t => t.IsAssignableTo(clientInterface) && t != clientInterface);
-                int methods = 0;
-                foreach (var method in implementation.GetMethods().Where(m => m.ReturnType.IsAssignableTo(typeof(Task<CallResult<UpdateSubscription>>))))
+        [Test]
+        [TestCase(TradeEnvironmentNames.Live, "https://api.kucoin.com/")]
+        [TestCase(TradeEnvironmentNames.Testnet, "https://openapi-sandbox.kucoin.com/")]
+        [TestCase("", "https://api.kucoin.com/")]
+        public void TestConstructorEnvironments(string environmentName, string expected)
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    var interfaceMethod = clientInterface.GetMethod(method.Name, method.GetParameters().Select(p => p.ParameterType).ToArray());
-                    Assert.NotNull(interfaceMethod);
-                    methods++;
-                }
-                Debug.WriteLine($"{clientInterface.Name} {methods} methods validated");
-            }
+                    { "Kucoin:Environment:Name", environmentName },
+                }).Build();
+
+            var collection = new ServiceCollection();
+            collection.AddKucoin(configuration.GetSection("Kucoin"));
+            var provider = collection.BuildServiceProvider();
+
+            var client = provider.GetRequiredService<IKucoinRestClient>();
+
+            var address = client.SpotApi.BaseAddress;
+
+            Assert.That(address, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void TestConstructorNullEnvironment()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { "Kucoin", null },
+                }).Build();
+
+            var collection = new ServiceCollection();
+            collection.AddKucoin(configuration.GetSection("Kucoin"));
+            var provider = collection.BuildServiceProvider();
+
+            var client = provider.GetRequiredService<IKucoinRestClient>();
+
+            var address = client.SpotApi.BaseAddress;
+
+            Assert.That(address, Is.EqualTo("https://api.kucoin.com/"));
+        }
+
+        [Test]
+        public void TestConstructorApiOverwriteEnvironment()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { "Kucoin:Environment:Name", "test" },
+                    { "Kucoin:Rest:Environment:Name", "live" },
+                }).Build();
+
+            var collection = new ServiceCollection();
+            collection.AddKucoin(configuration.GetSection("Kucoin"));
+            var provider = collection.BuildServiceProvider();
+
+            var client = provider.GetRequiredService<IKucoinRestClient>();
+
+            var address = client.SpotApi.BaseAddress;
+
+            Assert.That(address, Is.EqualTo("https://api.kucoin.com/"));
+        }
+
+        [Test]
+        public void TestConstructorConfiguration()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { "ApiCredentials:Key", "123" },
+                    { "ApiCredentials:Secret", "456" },
+                    { "ApiCredentials:PassPhrase", "222" },
+                    { "Socket:ApiCredentials:Key", "456" },
+                    { "Socket:ApiCredentials:Secret", "789" },
+                    { "Socket:ApiCredentials:PassPhrase", "111" },
+                    { "Rest:OutputOriginalData", "true" },
+                    { "Socket:OutputOriginalData", "false" },
+                    { "Rest:Proxy:Host", "host" },
+                    { "Rest:Proxy:Port", "80" },
+                    { "Socket:Proxy:Host", "host2" },
+                    { "Socket:Proxy:Port", "81" },
+                }).Build();
+
+            var collection = new ServiceCollection();
+            collection.AddKucoin(configuration);
+            var provider = collection.BuildServiceProvider();
+
+            var restClient = provider.GetRequiredService<IKucoinRestClient>();
+            var socketClient = provider.GetRequiredService<IKucoinSocketClient>();
+
+            Assert.That(((BaseApiClient)restClient.SpotApi).OutputOriginalData, Is.True);
+            Assert.That(((BaseApiClient)socketClient.SpotApi).OutputOriginalData, Is.False);
+            Assert.That(((BaseApiClient)restClient.SpotApi).AuthenticationProvider.ApiKey, Is.EqualTo("123"));
+            Assert.That(((BaseApiClient)socketClient.SpotApi).AuthenticationProvider.ApiKey, Is.EqualTo("456"));
+            Assert.That(((BaseApiClient)restClient.SpotApi).ClientOptions.Proxy.Host, Is.EqualTo("host"));
+            Assert.That(((BaseApiClient)restClient.SpotApi).ClientOptions.Proxy.Port, Is.EqualTo(80));
+            Assert.That(((BaseApiClient)socketClient.SpotApi).ClientOptions.Proxy.Host, Is.EqualTo("host2"));
+            Assert.That(((BaseApiClient)socketClient.SpotApi).ClientOptions.Proxy.Port, Is.EqualTo(81));
         }
     }
 }
